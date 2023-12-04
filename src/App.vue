@@ -1,18 +1,17 @@
 <template>
+<div id="app">
     <img id=logo alt="logo" src="./assets/logo.png" />
-    <ConnectNetwork/>
-    <!-- <router-view /> -->
+    <router-view />
+</div>
 </template>
 
 <script>
 // import DashboardView from './components/Dashboard.vue';
-import ConnectNetwork from './components/connect.vue';
 
 export default {
   name: "App",
   components: {
-    // DashboardView,
-    ConnectNetwork,
+    // ConnectNetwork,
     
   },
 };
@@ -33,6 +32,4 @@ html,body {
   margin-top: 60px;
   height: 120px;
 }
-
-
 </style>

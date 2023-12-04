@@ -7,7 +7,7 @@
 <script>
 export default {
     name: 'ConnectNetwork',
-
+    
 }
 </script>
 
@@ -25,7 +25,7 @@ button:hover{
     transition-duration: 0.8s;
 
 }
-/* button:clicked{
-
-} */
+button{
+  background-color: green;
+}
 </style>

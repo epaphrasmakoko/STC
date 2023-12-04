@@ -10,13 +10,13 @@
     <button class="btn btn-primary" @click="requestMoney">Request Money</button>
     <br><br>
     <!-- Deposit Button (Common Feature) -->
-    <button class="btn btn-success" @click="depositMoney">Deposit Money</button>
+    <button class="btn btn-success" @click="depositMoney">Fund Organization</button>
     <br><br>
     <!-- Approval Button (CEO/Manager Specific Feature) -->
     <button class="btn btn-secondary" v-if="isCEOorManager" @click="approveRequests">Approve Requests</button>
-    <br>
+    <br><br>
     <!-- Transaction History (Common Feature) -->
-    <div>
+    <div style="color:white;">
       <h3>Transaction History</h3>
       <ul>
         <li v-for="transaction in transactions" :key="transaction.id">
@@ -34,8 +34,10 @@ export default {
   data() {
     return {
       transactions: [
-        { id: 1, description: 'Expense payment', amount: -50 },
-        { id: 2, description: 'Deposit to main account', amount: 100 },
+        { id: 1, description: 'Request Transactions', amount: -50 },
+        { id: 2, description: 'Income Transactions', amount: 100 },
+        { id: 3, description: 'Salaries Transactions', amount: 7000 },
+        { id: 4, description: 'Total Transactions', amount: 1000 },
         // Add more sample transactions as needed
       ],
     };
