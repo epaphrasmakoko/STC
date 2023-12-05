@@ -1,6 +1,8 @@
 <template>
   <div>
-    <button class="btn" @click="connectMetaMask"><strong>Connect To STC network</strong></button>
+    <button class="btn" @click="connectMetaMask">
+      <strong>Connect To STC network</strong>
+    </button>
   </div>
 </template>
 
@@ -11,21 +13,22 @@ export default {
     connectMetaMask() {
       // Check if MetaMask is installed
       if (window.ethereum) {
-          window.alert("MetaMask volaaaa connected");
-        // // Request account access
-        // window.ethereum
-        //   .request({ method: "eth_requestAccounts" })
-        //   .then((accounts) => {
-        //     // User connected, 'accounts' contains an array of user accounts
-        //     const userAddress = accounts[0];
-        //     // Store user's Ethereum address in your application's state
-        //     this.$store.commit("setUserAddress", userAddress);
-        //   })
-        //   .catch((error) => {
-        //     console.error(error);
-        //   });
+        // window.alert("MetaMask volaaaa connected");
+        // Request account access
+        window.ethereum
+          .request({ method: "eth_requestAccounts" })
+          .then((accounts) => {
+            // User connected, 'accounts' contains an array of user accounts
+            const userAddress = accounts[0];
+            // Store user's Ethereum address in your application's state
+            this.$store.commit("setUserAddress", userAddress);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       } else {
         window.alert("MetaMask extension not detected");
+        window.error("MetaMask extension not detected");
       }
     },
   },
