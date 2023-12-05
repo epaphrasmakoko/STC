@@ -1,7 +1,7 @@
 <template>
   <div>
     <button class="btn" @click="connectMetaMask">
-      <strong>Connect To STC network</strong>
+      <strong>Connect To Your Metamask Wallet</strong>
     </button>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
           });
       } else {
         window.alert("MetaMask extension not detected");
-        window.error("MetaMask extension not detected");
+        console.error("MetaMask extension not detected");
       }
     },
   },
