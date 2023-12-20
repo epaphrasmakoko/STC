@@ -7,28 +7,55 @@
 </template>
 
 <script>
+import Web3 from 'web3';
+import YourSmartContractABI from '/home/fxhacker/Documents/Blockchain/Frontend/Vue/STC/src/MainAccountABI.js'; // Adjust the path accordingly
+const contractAddress = '0x30d6A1b5b7C474Ec966191342177A7969a2491Ba'; // contract address
+
 export default {
   name: "ConnectNetwork",
   methods: {
-    connectMetaMask() {
-      // Check if MetaMask is installed
+    async connectMetaMask() {
       if (window.ethereum) {
-        // window.alert("MetaMask volaaaa connected");
-        // Request account access
-        window.ethereum
-          .request({ method: "eth_requestAccounts" })
-          .then((accounts) => {
-            // User connected, 'accounts' contains an array of user accounts
-            const userAddress = accounts[0];
-            // Store user's Ethereum address in your application's state
-            this.$store.commit("setUserAddress", userAddress);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        try {
+          // Request account access
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          
+          // Fetch the user's Ethereum address
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          const userAddress = accounts[0];
+
+          // Create a Web3 instance
+          const web3 = new Web3(window.ethereum);
+
+          // Load the smart contract
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          // Check if the address is registered in the smart contract
+          const isRegistered = await contract.methods.isAddressRegistered(userAddress).call();
+          
+          if (isRegistered) {
+          console.log('Address is registered in the smart contract');
+
+          // Fetch user role from the smart contract
+          const userRole = await contract.methods.getUserRole(userAddress).call();
+          
+          // Store user role in Vuex
+          this.$store.commit('setUserRole', userRole);
+
+          // Navigate to the Dashboard component
+          this.$router.push('/dashboard');
+
+            // Now you can perform further actions or navigate to the dashboard
+          } else {
+            console.log('Address is not registered in the smart contract');
+            // Handle the case where the address is not registered
+          }
+        } catch (error) {
+          console.error('Error connecting to MetaMask or checking address registration:', error);
+        }
       } else {
-        window.alert("MetaMask extension not detected");
-        console.error("MetaMask extension not detected");
+        window.alert('MetaMask extension not detected');
+        console.error('MetaMask extension not detected');
       }
     },
   },
