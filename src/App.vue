@@ -6,6 +6,7 @@
 </template>
 
 <script>
+
 // import DashboardView from './components/Dashboard.vue';
 
 export default {
@@ -18,7 +19,6 @@ export default {
 </script>
 
 <style>
-@import 'bootstrap/dist/css/bootstrap.min.css';
 
 html,body {
   font-family: Avenir, Helvetica, Arial, sans-serif;

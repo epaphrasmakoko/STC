@@ -66,7 +66,7 @@ export default {
 button {
   margin-top: 60px;
   width: 500px;
-  background-color: black;
+  background-color: green;
   color: aliceblue;
 }
 button:hover {
@@ -76,7 +76,5 @@ button:hover {
   color: black;
   transition-duration: 0.8s;
 }
-button {
-  background-color: green;
-}
+
 </style>
