@@ -1,140 +1,136 @@
 <template>
   <div id="dashboard">
-    <br>
-    <h2 style="color: blanchedalmond;">Welcome, <strong>User</strong> to STC</h2>
-    <br>
+    <div class="admin-btns">
+      <!-- Specific Features for CEO -->
+      <button class="btn btn-light" @click="distributeSalaries">Distribute Salaries</button>
+      <!-- Specific Features for Admin -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Register
+        User</button>
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
 
-    <div class="flex-container">
-      <div>
-        <p style="color:rgb(0, 255, 0);">{{ mainAccountBalance }} Ether</p>
-        <h5>Main account Balance</h5>
-      </div>
-      <div>
-        <p style="color:rgb(0, 255, 0);">{{ NumberOfUser }}</p>
-        <h5>Total Registered Users</h5>
-      </div>
-      <div>
-        <p style="color:rgb(0, 255, 0);">{{ TotalTransactions }}</p>
-        <h5>Total Transactions</h5>
-      </div>
-    </div>
-    <hr style="color:rgb(0, 255, 0);">
-
-    <div class="flex-container">
-      <div>
-        <p style="color:rgb(255, 230, 0);">{{ TotalSalariesAmount }} Ether</p>
-        <h5>Total Amount of Salaries Distributed</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 230, 0);">{{ TotalSalaryTransactions }}</p>
-        <h5>Total Salaries Transactions</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 230, 0);">{{ TotalIncome }} Ether</p>
-        <h5>Total Amount of Income</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 230, 0);">{{ TotalIncomeTransactions }}</p>
-        <h5>Total Income Transactions</h5>
-      </div>
-    </div>
-    <hr style="color:rgb(255, 230, 0);">
-    <div class="flex-container">
-      <div>
-        <p style="color:rgb(255, 60, 0);">5</p>
-        <h5>Total Amount Approved</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 60, 0);">5</p>
-        <h5>Total Requests Transactions</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 60, 0);">5</p>
-        <h5>Approved Requests</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 60, 0);">5</p>
-        <h5>Pending Requests</h5>
-      </div>
-      <div>
-        <p style="color:rgb(255, 60, 0);">5</p>
-        <h5>Rejected Requests</h5>
-      </div>
-    </div>
-
-    <hr style="color:rgb(255, 60, 0);">
-    <br>
-
-
-    <!-- Request Money Button (Common Feature) -->
-    <button class="btn btn-primary" @click="requestMoney">Request Money</button>
-    <br><br>
-    <!-- Deposit Button (Common Feature) -->
-    <button class="btn btn-success" @click="depositMoney">Deposit Money</button>
-    <br><br>
-    <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
-    <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
-      placeholder="Deposit Amount in Ether" />
-    <br><br>
-
-    <!-- Specific Features for CEO -->
-    <button class="btn btn-secondary" v-if="isCEO" @click="approvalsCEO">Approvals</button>
-    <br><br>
-
-    <!-- Specific Features for CEO -->
-    <button class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
-    <br><br>
-
-    <!-- Specific Features for Admin -->
-    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myModal">Register User</button>
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
-      <div class="modal-dialog">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button id="closeIcon" type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal"></button>
-            <h4 class="modal-title">Fill User Information</h4>
-          </div>
-          <div class="modal-body">
-            <!-- Input fields for user information -->
-            <form @submit.prevent="submitUser">
-              <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" class="form-control" id="username" v-model="newUser.username" required>
-              </div>
-              <div class="form-group">
-                <label for="address">Address:</label>
-                <input type="text" class="form-control" id="address" v-model="newUser.address" required>
-              </div>
-              <div class="form-group">
-                <label for="salary">Salary:</label>
-                <input type="number" class="form-control" id="salary" v-model="newUser.salary" step="0.01" min="0"
-                  placeholder="Ether Amount in Ether" required>
-              </div>
-              <div class="form-group">
-                <label for="role">Role:</label>
-                <input type="text" class="form-control" id="role" v-model="newUser.role" placeholder="if CEO write CEO"
-                  required>
-              </div>
-              <button type="submit" class="btn btn-success">Submit</button>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Fill User Information</h4>
+              <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                data-dismiss="modal"></button>
+              
+            </div>
+            <div class="modal-body">
+              <!-- Input fields for user information -->
+              <form @submit.prevent="submitUser">
+                <div class="form-group">
+                  <label for="username">Username:</label>
+                  <input type="text" class="form-control" id="username" v-model="newUser.username" required>
+                </div>
+                <div class="form-group">
+                  <label for="address">Address:</label>
+                  <input type="text" class="form-control" id="address" v-model="newUser.address" required>
+                </div>
+                <div class="form-group">
+                  <label for="salary">Salary:</label>
+                  <input type="number" class="form-control" id="salary" v-model="newUser.salary" step="0.01" min="0"
+                    placeholder="Ether Amount in Ether" required>
+                </div>
+                <div class="form-group">
+                  <label for="role">Role:</label>
+                  <input type="text" class="form-control" id="role" v-model="newUser.role" placeholder="if CEO write CEO"
+                    required>
+                </div>
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+                
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="top">
+      <div class="request-btns">
+        <button class="btn btn-primary" @click="requestMoney">Request Money</button>
+        <!-- Specific Features for CEO -->
+        <button class="btn btn-secondary" v-if="isCEO" @click="approvalsCEO">Approvals</button>
+      </div>
+      <div class="deposits">
+        <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
+        <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
+          placeholder="Deposit Amount in Ether" />
+        <!-- Deposit Button (Common Feature) -->
+        <button class="btn btn-success" @click="depositMoney">Deposit Money</button>
+        <!-- Request Money Button (Common Feature) -->
+      </div>
+    </div>
 
-    <br><br>
+    <div class="intro">
+      <div class="intro-card">
+        <p>{{ mainAccountBalance }} Ether</p>
+        <h5>Main account Balance</h5>
+      </div>
+      <div class="intro-card">
+        <p>{{ NumberOfUser }}</p>
+        <h5>Total Registered Users</h5>
+      </div>
+      <div class="intro-card">
+        <p>{{ TotalTransactions }}</p>
+        <h5>Total Transactions</h5>
+      </div>
+    </div>
+    <hr>
+    <h1 class="title">Income & Salaries</h1>
+    <div class="salaries">
+      <div class="salaries-card">
+        <p>{{ TotalSalariesAmount }} Ether</p>
+        <h5>Total Amount of Salaries Distributed</h5>
+      </div>
+      <div class="salaries-card">
+        <p>{{ TotalSalaryTransactions }}</p>
+        <h5>Total Salaries Transactions</h5>
+      </div>
+      <div class="salaries-card">
+        <p>{{ TotalIncome }} Ether</p>
+        <h5>Total Amount of Income</h5>
+      </div>
+      <div class="salaries-card">
+        <p>{{ TotalIncomeTransactions }}</p>
+        <h5>Total Income Transactions</h5>
+      </div>
+    </div>
+    <hr>
+    <h1 class="title">Requests</h1>
+    <div class="requests">
+      <div class="request-card">
+        <p>5</p>
+        <h5>Total Amount Approved</h5>
+      </div>
+      <div class="request-card">
+        <p>5</p>
+        <h5>Total Requests Transactions</h5>
+      </div>
+      <div class="request-card">
+        <p>5</p>
+        <h5>Approved Requests</h5>
+      </div>
+      <div class="request-card">
+        <p>5</p>
+        <h5>Pending Requests</h5>
+      </div>
+      <div class="request-card">
+        <p>5</p>
+        <h5>Rejected Requests</h5>
+      </div>
+    </div>
+
+
   </div>
 </template>
 
 <script>
 import Web3 from 'web3';
-import YourSmartContractABI from '/home/fxhacker/Documents/Blockchain/Frontend/Vue/STC/src/MainAccountABI.js'; // Adjust the path accordingly
+import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
 const contractAddress = '0xBAfC48A283F5e57620Ff1F4451fCB795bC445E54'; // contract address
 
 export default {
@@ -318,7 +314,7 @@ export default {
 
       } catch (error) {
         console.error('Error distributing salaries:', error);
-      } 
+      }
     },
 
 
@@ -332,39 +328,134 @@ export default {
 </script>
 
 <style scoped>
-/* Add your styles as needed */
 #dashboard {
-  color: black;
+  background-color: #0C356A;
+  color: white;
 }
 
-.btn {
-  color: aliceblue;
-  background-color: black;
-  border-color: black;
-}
-
-.flex-container {
-  display: flex;
-  justify-content: space-around;
-  background-color: transparent;
-}
-
-.flex-container>div {
-  color: bisque;
-  background-color: transparent;
-  width: 150px;
-  margin: 10px;
-  text-align: center;
-  line-height: 75px;
+.title {
   font-size: 30px;
+  color: #BFCFE7;
+  font-family: sans-serif;
+  text-align: center;
 }
 
-#closeIcon {
-  margin-left: 0px;
+.top {
+  display: flex;
+  justify-content: space-between;
 }
 
-.form-group {
-  text-align: left;
+.request-btns {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+
+.intro,
+.salaries,
+.requests {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.intro-card {
+  padding: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  width: 31%;
+  border-radius: 10px;
+  background-color: #BFCFE7;
+  color: #0C356A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.intro-card p,
+.salaries-card p,
+.request-card p {
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+.salaries-card {
+  padding: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  width: 24%;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #BFCFE7;
+  color: #0C356A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.request-card {
+  padding: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  width: 18%;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #BFCFE7;
+  color: #0C356A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.deposits {
+  padding: 20px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.deposits input {
+  border: none;
+  outline: none;
+  padding: 8px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
+.deposits button {
+  margin-right: 10px;
+}
+
+.admin-btns {
+  padding: 10px;
+  padding-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.admin-btns button{
+  margin-left: 10px;
+}
+
+#closeIcon{
+  background-color: white;
+}
+
+.modal-content{
+  background-color: #0C356A;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: end;
+  margin-top: 10px;
+}
+
+.form-group{
   margin-bottom: 10px;
 }
 </style>

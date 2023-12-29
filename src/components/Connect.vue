@@ -8,7 +8,7 @@
 
 <script>
 import Web3 from 'web3';
-import YourSmartContractABI from '/home/fxhacker/Documents/Blockchain/Frontend/Vue/STC/src/MainAccountABI.js'; // Adjust the path accordingly
+import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
 const contractAddress = '0x30d6A1b5b7C474Ec966191342177A7969a2491Ba'; // contract address
 
 export default {
