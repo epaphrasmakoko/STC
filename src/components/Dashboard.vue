@@ -135,7 +135,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '/home/fxhacker/Documents/Blockchain/Frontend/Vue/STC/src/MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xCC8D619279C2FCA9Ff49aeE3FDeE2C6764E31466'; // contract address
+const contractAddress = '0xBAfC48A283F5e57620Ff1F4451fCB795bC445E54'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -196,7 +196,7 @@ export default {
             .registerUser(
               this.newUser.username,
               this.newUser.address,
-              web3.utils.toWei(this.newUser.salary.toString(), 'ether'),
+              this.newUser.salary,
               this.newUser.role
             )
             .send({ from: userAddress });
@@ -318,7 +318,7 @@ export default {
 
       } catch (error) {
         console.error('Error distributing salaries:', error);
-      }
+      } 
     },
 
 
