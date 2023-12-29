@@ -1,11 +1,41 @@
 <template>
   <div id="dashboard">
     <div class="admin-btns">
-      <!-- Specific Features for CEO -->
-      <button class="btn btn-light" @click="distributeSalaries">Distribute Salaries</button>
       <!-- Specific Features for Admin -->
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Register
         User</button>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
+        User</button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="deleteModal" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete User</h4>
+              <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                data-dismiss="modal"></button>
+
+            </div>
+            <div class="modal-body">
+              <!-- Input fields for user information -->
+              <form @submit.prevent="">
+                <div class="form-group">
+                  <label for="address">Address:</label>
+                  <input type="text" class="form-control" id="address" v-model="newUser.address" required>
+                </div>
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <!-- Modal -->
       <div class="modal fade" id="myModal" role="dialog">
         <div class="modal-dialog">
@@ -16,33 +46,33 @@
               <h4 class="modal-title">Fill User Information</h4>
               <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                 data-dismiss="modal"></button>
-              
+
             </div>
             <div class="modal-body">
               <!-- Input fields for user information -->
               <form @submit.prevent="submitUser">
                 <div class="form-group">
-                  <label for="username">Username:</label>
+                  <label for="username">Username</label>
                   <input type="text" class="form-control" id="username" v-model="newUser.username" required>
                 </div>
                 <div class="form-group">
-                  <label for="address">Address:</label>
+                  <label for="address">Address</label>
                   <input type="text" class="form-control" id="address" v-model="newUser.address" required>
                 </div>
                 <div class="form-group">
-                  <label for="salary">Salary:</label>
+                  <label for="salary">Salary</label>
                   <input type="number" class="form-control" id="salary" v-model="newUser.salary" step="0.01" min="0"
                     placeholder="Ether Amount in Ether" required>
                 </div>
                 <div class="form-group">
-                  <label for="role">Role:</label>
+                  <label for="role">Role</label>
                   <input type="text" class="form-control" id="role" v-model="newUser.role" placeholder="if CEO write CEO"
                     required>
                 </div>
                 <div class="form-footer">
                   <button type="submit" class="btn btn-success">Submit</button>
                 </div>
-                
+
               </form>
             </div>
           </div>
@@ -51,10 +81,53 @@
     </div>
     <div class="top">
       <div class="request-btns">
-        <button class="btn btn-primary" @click="requestMoney">Request Money</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
         <!-- Specific Features for CEO -->
-        <button class="btn btn-secondary" v-if="isCEO" @click="approvalsCEO">Approvals</button>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
+        <!-- Specific Features for CEO -->
+        <button class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="requestModal" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Fill Request Information</h4>
+                <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                  data-dismiss="modal"></button>
+
+              </div>
+              <div class="modal-body">
+                <!-- Input fields for user information -->
+                <form @submit.prevent="">
+                  <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" v-model="newUser.username" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="salary">Amount:</label>
+                    <input type="number" class="form-control" id="salary" v-model="newUser.salary" step="0.01" min="0"
+                      placeholder="Ether Amount in Ether" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="address">Details of Request</label>
+                    <input type="text" class="form-control" id="address" v-model="newUser.address" required>
+                  </div>
+                  <div class="form-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      <!-- v-if="isCEO" -->
       <div class="deposits">
         <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
         <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
@@ -351,6 +424,10 @@ export default {
   padding: 20px;
 }
 
+.request-btns button {
+  margin-right: 10px;
+}
+
 
 .intro,
 .salaries,
@@ -364,7 +441,7 @@ export default {
 
 .intro-card {
   padding: 10px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.7);
   width: 31%;
   border-radius: 10px;
   background-color: #BFCFE7;
@@ -373,6 +450,13 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+.intro-card:hover {
+  background-color: #0C356A;
+  color: #BFCFE7;
+  box-shadow: 0px 5px 150px rgba(255, 255, 255, 0.7);
+
 }
 
 .intro-card p,
@@ -384,7 +468,7 @@ export default {
 
 .salaries-card {
   padding: 10px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.7);
   width: 24%;
   text-align: center;
   border-radius: 10px;
@@ -396,9 +480,15 @@ export default {
   flex-direction: column;
 }
 
+.salaries-card:hover {
+  background-color: #0C356A;
+  color: #BFCFE7;
+  box-shadow: 0px 5px 150px rgba(255, 255, 255, 0.7);
+}
+
 .request-card {
   padding: 10px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.7);
   width: 18%;
   text-align: center;
   border-radius: 10px;
@@ -408,6 +498,12 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+.request-card:hover {
+  background-color: #0C356A;
+  color: #BFCFE7;
+  box-shadow: 0px 5px 150px rgba(255, 255, 255, 0.7);
 }
 
 .deposits {
@@ -437,15 +533,16 @@ export default {
   justify-content: end;
 }
 
-.admin-btns button{
+.admin-btns button {
+  margin-right: 10px;
   margin-left: 10px;
 }
 
-#closeIcon{
+#closeIcon {
   background-color: white;
 }
 
-.modal-content{
+.modal-content {
   background-color: #0C356A;
 }
 
@@ -455,7 +552,7 @@ export default {
   margin-top: 10px;
 }
 
-.form-group{
+.form-group {
   margin-bottom: 10px;
 }
 </style>
