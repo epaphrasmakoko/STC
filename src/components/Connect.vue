@@ -17,17 +17,10 @@ export default {
     async connectMetaMask() {
       if (window.ethereum) {
         try {
-          // Request account access
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          
-          // Fetch the user's Ethereum address
+          await window.ethereum.request({ method: 'eth_requestAccounts' });          
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
           const userAddress = accounts[0];
-
-          // Create a Web3 instance
           const web3 = new Web3(window.ethereum);
-
-          // Load the smart contract
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
           // Check if the address is registered in the smart contract

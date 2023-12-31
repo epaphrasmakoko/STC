@@ -236,13 +236,13 @@ export default [
 		"type": "function"
 	},
 	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	},
 	{
 		"inputs": [],
@@ -486,6 +486,11 @@ export default [
 		],
 		"name": "requests",
 		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
 			{
 				"internalType": "address",
 				"name": "user",

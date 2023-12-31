@@ -1,5 +1,8 @@
 <template>
   <div id="dashboard">
+    <div id="connect">
+    <button  class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
+    </div>
     <div class="admin-btns">
       <!-- Specific Features for Admin -->
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Register
@@ -79,12 +82,11 @@
     </div>
 
     <div class="top">
+      <!-- Specific Features for CEO -->
       <div class="request-btns">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
-        <!-- Specific Features for CEO -->
-        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
-        <!-- Specific Features for CEO -->
-        <button class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
+        <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
 
         <!-- Modal -->
         <div class="modal fade" id="approvalModal" role="dialog">
@@ -100,12 +102,12 @@
                   <div v-for="request in requestsList" :key="request.requestId">
                     <p>{{ request.details }}</p>
                     <p>{{ request.amountWei }} Ether</p>
-                    <p>Status: {{ request.status }}</p>
+                    <p>Status: {{ getStatusLabel(request.status) }}</p>
 
                     <!-- Display approve and reject buttons for pending requests -->
-                    <template v-if="request.status === 'Pending'">
-                      <button @click="approveRequest(request.requestId)">Approve</button>
-                      <button @click="rejectRequest(request.requestId)">Reject</button>
+                    <template v-if="request.status == 0">
+                      <button class="btn btn-success" @click="approveRequest(request.id)">Approve</button>
+                      <button class="btn btn-danger" @click="rejectRequest(request.id)">Reject</button>
                     </template>
 
                     <hr>
@@ -224,7 +226,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xE576a2B570d98ed24BcD86c50d28519cB92Cc727'; // contract address
+const contractAddress = '0x5FdE90b7e2D09ad466a5991ce8d848B5ED92AfE0'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -264,10 +266,53 @@ export default {
       // Implement logic to determine if the user is an Administrator
       return this.$store.state.userRole === 'admin';
     },
+    isUser() {
+      // Implement logic to determine if user is the regitered in system
+      return this.$store.state.userRole === 'user';
+    }
   },
 
 
   methods: {
+
+    async connectMetaMask() {
+      if (window.ethereum) {
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });          
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          // Check if the address is registered in the smart contract
+          const isRegistered = await contract.methods.isAddressRegistered(userAddress).call();
+          
+          if (isRegistered) {
+          console.log('Address is registered in the smart contract');
+
+          // Fetch user role from the smart contract
+          const userRole = await contract.methods.getUserRole(userAddress).call();
+          
+          // Store user role in Vuex
+          this.$store.commit('setUserRole', userRole);
+
+          // Navigate to the Dashboard component
+          this.$router.push('/dashboard');
+
+            // Now you can perform further actions or navigate to the dashboard
+          } else {
+            console.log('Address is not registered in the smart contract');
+            // Handle the case where the address is not registered
+          }
+        } catch (error) {
+          console.error('Error connecting to MetaMask or checking address registration:', error);
+        }
+      } else {
+        window.alert('MetaMask extension not detected');
+        console.error('MetaMask extension not detected');
+      }
+    },
+
    async deleteUser() {
     try {
       if (window.ethereum) {
@@ -324,15 +369,29 @@ export default {
       }
     },
 
+    getStatusLabel(status) {
+      switch (parseInt(status)) {
+        case 0:
+          return 'Pending';
+        case 1:
+          return 'Approved';
+        case 2:
+          return 'Rejected';
+        default:
+          return 'Unknown';
+      }
+    },
+
 
     async approveRequest(requestId) {
         try {
           if (window.ethereum){
+            console.log('Approving request with ID:', requestId);
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const userAddress = accounts[0];
             const web3 = new Web3(window.ethereum);
             const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
+            
             // Call the smart contract method to approve the request
             await contract.methods.processRequest(requestId, true).send({ from: userAddress });
 
@@ -556,6 +615,8 @@ export default {
 
             // Update the data property with the list of requests
             this.requestsList = requests.reverse(); // Reverse the array to display the latest requests first
+            
+            console.log('Requests List:', this.requestsList); // Log the entire list to the console
           } else {
           window.alert('MetaMask extension not detected');
           console.error('MetaMask extension not detected');
@@ -731,5 +792,10 @@ export default {
 
 .form-group {
   margin-bottom: 10px;
+}
+#connect{
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
 }
 </style>
