@@ -10,21 +10,19 @@
       <!-- Modal -->
       <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog">
-
           <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Delete User</h4>
               <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                 data-dismiss="modal"></button>
-
             </div>
             <div class="modal-body">
-              <!-- Input fields for user information -->
-              <form @submit.prevent="">
+              <!-- Delete user by providing Address of the User -->
+              <form @submit.prevent="deleteUser">
                 <div class="form-group">
                   <label for="address">Address:</label>
-                  <input type="text" class="form-control" id="address" v-model="newUser.address" required>
+                  <input type="text" class="form-control" id="address" v-model="deleteUserAddress" required>
                 </div>
                 <div class="form-footer">
                   <button type="submit" class="btn btn-danger">Delete</button>
@@ -39,14 +37,12 @@
       <!-- Modal -->
       <div class="modal fade" id="myModal" role="dialog">
         <div class="modal-dialog">
-
           <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Fill User Information</h4>
               <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                 data-dismiss="modal"></button>
-
             </div>
             <div class="modal-body">
               <!-- Input fields for user information -->
@@ -66,19 +62,22 @@
                 </div>
                 <div class="form-group">
                   <label for="role">Role</label>
-                  <input type="text" class="form-control" id="role" v-model="newUser.role" placeholder="if CEO write CEO"
-                    required>
+                  <select class="form-control" name="role" id="role" v-model="newUser.role" required>
+                    <option value="" disabled>Select a role</option>
+                    <option value="CEO">CEO</option>
+                    <option value="user">User</option>
+                  </select>
                 </div>
                 <div class="form-footer">
                   <button type="submit" class="btn btn-success">Submit</button>
                 </div>
-
               </form>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div class="top">
       <div class="request-btns">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
@@ -87,46 +86,68 @@
         <!-- Specific Features for CEO -->
         <button class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
 
+        <!-- Modal -->
+        <div class="modal fade" id="approvalModal" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Requests List</h4>
+                <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                  data-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <div v-for="request in requestsList" :key="request.requestId">
+                    <p>{{ request.details }}</p>
+                    <p>{{ request.amountWei }} Ether</p>
+                    <p>Status: {{ request.status }}</p>
+
+                    <!-- Display approve and reject buttons for pending requests -->
+                    <template v-if="request.status === 'Pending'">
+                      <button @click="approveRequest(request.requestId)">Approve</button>
+                      <button @click="rejectRequest(request.requestId)">Reject</button>
+                    </template>
+
+                    <hr>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         <!-- Modal -->
         <div class="modal fade" id="requestModal" role="dialog">
           <div class="modal-dialog">
-
             <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Fill Request Information</h4>
                 <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                   data-dismiss="modal"></button>
-
               </div>
               <div class="modal-body">
-                <!-- Input fields for user information -->
-                <form @submit.prevent="">
+                <!-- Input fields for REQUEST INFORMATION -->
+                <form @submit.prevent="submitRequest">
                   <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" v-model="newUser.username" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="salary">Amount:</label>
-                    <input type="number" class="form-control" id="salary" v-model="newUser.salary" step="0.01" min="0"
+                    <label for="requestAmount">Amount</label>
+                    <input type="number" class="form-control" id="requestAmount" v-model="requestAmount" step="0.01" min="0"
                       placeholder="Ether Amount in Ether" required>
                   </div>
                   <div class="form-group">
                     <label for="address">Details of Request</label>
-                    <input type="text" class="form-control" id="address" v-model="newUser.address" required>
+                    <input type="text" class="form-control" id="requestDetails" v-model="requestDetails" required>
                   </div>
                   <div class="form-footer">
                     <button type="submit" class="btn btn-success">Submit</button>
                   </div>
-
                 </form>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <!-- v-if="isCEO" -->
       <div class="deposits">
         <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
@@ -176,27 +197,26 @@
     <h1 class="title">Requests</h1>
     <div class="requests">
       <div class="request-card">
-        <p>5</p>
+        <p>{{ TotalAmountRequests }} Ether</p>
         <h5>Total Amount Approved</h5>
       </div>
       <div class="request-card">
-        <p>5</p>
+        <p>{{ TotalRequests }}</p>
         <h5>Total Requests Transactions</h5>
       </div>
       <div class="request-card">
-        <p>5</p>
+        <p>{{ ApprovedRequests }}</p>
         <h5>Approved Requests</h5>
       </div>
       <div class="request-card">
-        <p>5</p>
-        <h5>Pending Requests</h5>
-      </div>
-      <div class="request-card">
-        <p>5</p>
+        <p>{{ RejectedRequests }}</p>
         <h5>Rejected Requests</h5>
       </div>
+      <div class="request-card">
+        <p>{{ PendingRequests }}</p>
+        <h5>Pending Requests</h5>
+      </div>
     </div>
-
 
   </div>
 </template>
@@ -204,7 +224,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xBAfC48A283F5e57620Ff1F4451fCB795bC445E54'; // contract address
+const contractAddress = '0xE576a2B570d98ed24BcD86c50d28519cB92Cc727'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -218,12 +238,21 @@ export default {
       TotalSalaryTransactions: 0,
       TotalIncome: 0,
       TotalIncomeTransactions: 0,
+      TotalAmountRequests: 0,
+      TotalRequests: 0,
+      ApprovedRequests: 0,
+      RejectedRequests: 0,
+      PendingRequests: 0,
       newUser: {
         username: '',
         address: '',
         salary: 0,
         role: ''
       },
+      requestAmount: 0,
+      requestDetails: '',
+      deleteUserAddress: '',
+      requestsList: [],
     };
   },
   computed: {
@@ -239,9 +268,105 @@ export default {
 
 
   methods: {
-    requestMoney() {
-      // Implement logic for requesting money
-      console.log('Request money logic');
+   async deleteUser() {
+    try {
+      if (window.ethereum) {
+
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+        
+        // Make a transaction to delete the user
+        await contract.methods.deleteUser(this.deleteUserAddress).send({ from: userAddress });
+
+      } else {
+        window.alert('MetaMask extension not detected');
+        console.error('MetaMask extension not detected');
+      }
+
+    } catch (error){
+        console.error('Error deleting user:', error);
+
+    } finally {
+      this.deleteUserAddress = '';
+    }
+   },
+
+    async submitRequest() {
+      try {
+        if (window.ethereum){
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+        // Make a transaction to request money
+        await contract.methods
+          .requestMoney(
+            this.requestAmount,
+            this.requestDetails
+          )
+          .send({ from: userAddress });
+
+        console.log('Money request submitted successfully!');
+
+        } else {
+          window.alert('MetaMask extension not detected');
+          console.error('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error Requesting Money:', error);
+      } finally {
+        // Reset the form or perform other actions after submission
+        this.requestAmount = 0;
+        this.requestDetails = '';
+      }
+    },
+
+
+    async approveRequest(requestId) {
+        try {
+          if (window.ethereum){
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+            // Call the smart contract method to approve the request
+            await contract.methods.processRequest(requestId, true).send({ from: userAddress });
+
+            // Fetch the updated list of requests
+            this.fetchRequests();
+          } else{
+          window.alert('MetaMask extension not detected');
+          console.error('MetaMask extension not detected');
+          }
+        } catch (error) {
+            console.error('Error approving request:', error);
+        }
+    },
+
+    async rejectRequest(requestId) {
+        try {
+          if (window.ethereum){
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+            
+            // Call the smart contract method to reject the request
+            await contract.methods.processRequest(requestId, false).send({ from: userAddress });
+
+            // Fetch the updated list of requests
+            this.fetchRequests();
+          } else{
+          window.alert('MetaMask extension not detected');
+          console.error('MetaMask extension not detected');
+          }
+        } catch (error) {
+            console.error('Error rejecting request:', error);
+        }
     },
 
     async submitUser() {
@@ -320,6 +445,22 @@ export default {
         // Fetch Total income Transactions
         const totalIncomeTransactions = await contract.methods.TotalIncomeTransactions().call();
 
+        // Fetch Total income Transactions
+        const totalAmountRequestsWei = await contract.methods.TotalAmountRequests().call();
+        const totalAmountRequests = web3.utils.fromWei(totalAmountRequestsWei.toString(), 'ether');
+
+        // Fetch Total income Transactions
+        const totalRequests = await contract.methods.TotalRequests().call();
+
+        // Fetch Total income Transactions
+        const approvedRequests = await contract.methods.ApprovedRequests().call();
+
+        // Fetch Total income Transactions
+        const rejectedRequests = await contract.methods.RejectedRequests().call();
+
+        // Fetch Total income Transactions
+        const pendingRequests = await contract.methods.PendingRequests().call();
+
         // Update the data property to trigger a re-render
         this.mainAccountBalance = balanceEther;
         this.NumberOfUser = registeredUsers;
@@ -328,6 +469,11 @@ export default {
         this.TotalSalaryTransactions = totalSalaryTransactions;
         this.TotalIncome = totalIncomeEther;
         this.TotalIncomeTransactions = totalIncomeTransactions;
+        this.TotalAmountRequests = totalAmountRequests;
+        this.TotalRequests = totalRequests;
+        this.ApprovedRequests = approvedRequests;
+        this.RejectedRequests = rejectedRequests;
+        this.PendingRequests = pendingRequests;
       } catch (error) {
         console.error('Error fetching main account balance:', error);
       }
@@ -390,12 +536,43 @@ export default {
       }
     },
 
+        async fetchRequests() {
+        try {
+          if (window.ethereum){
+            // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            // const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+            
+
+            const totalRequests = await contract.methods.requestCounter().call();
+
+            // Fetch each request individually
+            const requests = [];
+            for (let i = 1; i <= totalRequests; i++) {
+                const request = await contract.methods.requests(i).call();
+                requests.push(request);
+            }
+
+            // Update the data property with the list of requests
+            this.requestsList = requests.reverse(); // Reverse the array to display the latest requests first
+          } else {
+          window.alert('MetaMask extension not detected');
+          console.error('MetaMask extension not detected');
+          }
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+        }
+    },
+
 
   },
 
   mounted() {
     // Fetch main account balance when the component is mounted
     this.fetchMainAccountBalance();
+    // Fetch requests when the component is mounted
+    this.fetchRequests();
   },
 };
 </script>
@@ -539,7 +716,7 @@ export default {
 }
 
 #closeIcon {
-  background-color: white;
+  background-color: red;
 }
 
 .modal-content {

@@ -2,7 +2,8 @@
   <div id="app">
     <div class="appbar">
       <img id="logo" alt="logo" src="./assets/logo.png" />
-      <h2>Welcome, <strong>User</strong> to STC</h2>
+      <h1>Smart Transparent Cashier <strong>STC</strong></h1>
+      <h2>Welcome, <strong>User</strong></h2>
     </div>
     <router-view />
   </div>
@@ -37,9 +38,10 @@ export default {
   align-items: center;
 }
 
-.appbar h2 {
+.appbar h2,h1 {
   font-size: 24px;
   color: white;
   font-family: sans-serif;
+  text-align: center;
 }
 </style>
