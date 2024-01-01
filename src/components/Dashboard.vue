@@ -1,9 +1,9 @@
 <template>
   <div id="dashboard">
-    <div id="connect">
-    <button  class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
+    <div v-if="!isUser && !isAdmin && !isCEO" id="connect">
+    <button class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
     </div>
-    <div class="admin-btns">
+    <div v-if="isAdmin" class="admin-btns">
       <!-- Specific Features for Admin -->
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Register
         User</button>
@@ -81,10 +81,10 @@
       </div>
     </div>
 
-    <div class="top">
+    <div v-if="isCEO || isUser || isAdmin" class="top">
       <!-- Specific Features for CEO -->
       <div class="request-btns">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
         <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
         <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
 
@@ -150,8 +150,8 @@
         </div>
       </div>
 
-      <!-- v-if="isCEO" -->
-      <div class="deposits">
+
+      <div v-if="isUser || isCEO || isAdmin" class="deposits">
         <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
         <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
           placeholder="Deposit Amount in Ether" />
@@ -226,7 +226,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0x5FdE90b7e2D09ad466a5991ce8d848B5ED92AfE0'; // contract address
+const contractAddress = '0xbde02c17320b53ee3F454C94c8641C5baCDc32Ad'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -260,7 +260,7 @@ export default {
   computed: {
     isCEO() {
       // Implement logic to determine if the user is a CEO
-      return this.$store.state.userRole === 'ceo';
+      return this.$store.state.userRole === 'CEO';
     },
     isAdmin() {
       // Implement logic to determine if the user is an Administrator
@@ -275,7 +275,20 @@ export default {
 
   methods: {
 
+    async checkMetaMaskConnection() {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        const isConnected = accounts.length > 0;
+        this.isMetaMaskConnected = isConnected;
+      } catch (error) {
+        console.error('Error checking MetaMask connection:', error);
+      }
+    }
+    },
+
     async connectMetaMask() {
+    if (!this.$store.state.userRole) {
       if (window.ethereum) {
         try {
           await window.ethereum.request({ method: 'eth_requestAccounts' });          
@@ -301,6 +314,7 @@ export default {
 
             // Now you can perform further actions or navigate to the dashboard
           } else {
+            window.alert('You are not Registered User')
             console.log('Address is not registered in the smart contract');
             // Handle the case where the address is not registered
           }
@@ -311,6 +325,7 @@ export default {
         window.alert('MetaMask extension not detected');
         console.error('MetaMask extension not detected');
       }
+    }
     },
 
    async deleteUser() {
@@ -634,6 +649,15 @@ export default {
     this.fetchMainAccountBalance();
     // Fetch requests when the component is mounted
     this.fetchRequests();
+
+    // Check for the user's role when the component is mounted
+    if (!this.$store.state.userRole) {
+      // If the role is not present, trigger the MetaMask connection process
+      this.connectMetaMask();
+    }
+
+    // Check if MetaMask is already connected
+    this.checkMetaMaskConnection();
   },
 };
 </script>
