@@ -3,8 +3,8 @@ import ConnectNetwork from '../components/Connect.vue';
 import Dashboard from '../components/Dashboard.vue';
 
 const routes = [
-  { path: '/', component: ConnectNetwork },
-  { path: '/dashboard', component: Dashboard, /*meta: { requiresAuth: true }*/ },
+  { path: '/', component: Dashboard },
+  { path: '/testconnect', component: ConnectNetwork, /*meta: { requiresAuth: true }*/ },
   // { path: '/dashboard-other', component: DashboardOther, /*meta: { requiresAuth: true, requiresOther: true }*/ },
 ];
 

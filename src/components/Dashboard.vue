@@ -226,7 +226,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xbde02c17320b53ee3F454C94c8641C5baCDc32Ad'; // contract address
+const contractAddress = '0x423c13b91F06989c97Be3441206fe7bfd4473A46'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -310,7 +310,7 @@ export default {
           this.$store.commit('setUserRole', userRole);
 
           // Navigate to the Dashboard component
-          this.$router.push('/dashboard');
+          // this.$router.push('/dashboard');
 
             // Now you can perform further actions or navigate to the dashboard
           } else {
