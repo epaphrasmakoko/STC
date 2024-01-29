@@ -14,7 +14,7 @@
 // import DashboardView from './components/Dashboard.vue';
 import Web3 from 'web3';
 import YourSmartContractABI from './MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0x423c13b91F06989c97Be3441206fe7bfd4473A46'; // contract address
+const contractAddress = '0xA6DB4a399Ea1D31744aE74ECF6d4C012C21236E1'; // contract address
 
 export default {
   name: "App",

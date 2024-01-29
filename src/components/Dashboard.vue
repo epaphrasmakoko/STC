@@ -5,10 +5,50 @@
     </div>
     <div v-if="isAdmin" class="admin-btns">
       <!-- Specific Features for Admin -->
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Register
+      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#viewModal">View
+        Users</button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Register
         User</button>
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
         User</button>
+
+      
+      <!-- Modal -->
+      <div class="modal fade bd-example-modal-lg" id="viewModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Total Users: <strong>{{NumberOfUser}}</strong></h4>
+              <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="admin-users">
+                <table class="table table-bordered table-hover table-dark">
+                  <thead>
+                   <tr>
+                   <th>Username</th>
+                   <th>Address</th>
+                   <th>Salary (Ether)</th>
+                   <th>Role</th>
+                   </tr>
+                  </thead>
+                <tbody>
+                  <tr v-for="user in allUsers" :key="user.address">
+                   <td>{{ user.username }}</td>
+                   <td>{{ user.address }}</td>
+                   <td>{{ user.salary / 1e18 }}</td>
+                   <td>{{ user.role }}</td>
+                   </tr>
+                </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
 
       <!-- Modal -->
       <div class="modal fade" id="deleteModal" role="dialog">
@@ -38,7 +78,7 @@
 
 
       <!-- Modal -->
-      <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal fade" id="registerModal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content -->
           <div class="modal-content">
@@ -86,7 +126,25 @@
       <div class="request-btns">
         <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
         <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal">Deposits</button>
         <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="depositModal" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Total Deposits: <strong>{{TotalIncome}} Ethers</strong></h4>
+                <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                  data-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Modal -->
         <div class="modal fade" id="approvalModal" role="dialog">
@@ -118,7 +176,7 @@
         </div>
 
 
-        <!-- Modal -->
+        <!--Request Modal -->
         <div class="modal fade" id="requestModal" role="dialog">
           <div class="modal-dialog">
             <!-- Modal content -->
@@ -137,7 +195,7 @@
                       placeholder="Ether Amount in Ether" required>
                   </div>
                   <div class="form-group">
-                    <label for="address">Details of Request</label>
+                    <label for="requestDetails">Details of Request</label>
                     <input type="text" class="form-control" id="requestDetails" v-model="requestDetails" required>
                   </div>
                   <div class="form-footer">
@@ -151,8 +209,40 @@
       </div>
 
 
+      <!--Deposit Modal -->
+      <div class="modal fade" id="IncomeModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Fill Deposit Information</h4>
+                <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                  data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input fields for REQUEST INFORMATION -->
+                <form @submit.prevent="submitRequest">
+                  <div class="form-group">
+                    <label for="requestAmount">Amount</label>
+                    <input type="number" class="form-control" id="requestAmount" v-model="requestAmount" step="0.01" min="0"
+                      placeholder="Ether Amount in Ether" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="address">Details of Deposit</label>
+                    <input type="text" class="form-control" id="requestDetails" v-model="requestDetails" required>
+                  </div>
+                  <div class="form-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                  </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <div v-if="isUser || isCEO || isAdmin" class="deposits">
-        <!-- <label for="depositAmount">Enter Amount (in Ether): </label> -->
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#IncomeModal">Deposit Money</button>
         <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
           placeholder="Deposit Amount in Ether" />
         <!-- Deposit Button (Common Feature) -->
@@ -160,7 +250,53 @@
         <!-- Request Money Button (Common Feature) -->
       </div>
     </div>
+    <hr>
 
+<div class="userTables" v-if="isUser || isAdmin">
+  <div class="user-requests">
+  <h1 class="title">Requests</h1>
+  <table class="table table-bordered table-hover table-dark">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Amount (Ether)</th>
+        <th>Details</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="request in userRequestTransactions" :key="request.requestId">
+        <td>{{ request.requestId }}</td>
+        <td>{{ request.amountWei / 1e18 }}</td>
+        <td>{{ request.details }}</td>
+        <td>{{ getStatusLabel(request.status) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="user-requests">
+  <h1 class="title">Deposits</h1>
+  <table class="table table-bordered table-hover table-dark">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Amount (Ether)</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="request in userRequestTransactions" :key="request.requestId">
+        <td>{{ request.requestId }}</td>
+        <td>{{ request.amountWei / 1e18 }}</td>
+        <td>{{ request.details }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+    <div v-if="isCEO">
     <div class="intro">
       <div class="intro-card">
         <p>{{ mainAccountBalance }} Ether</p>
@@ -219,6 +355,7 @@
         <h5>Pending Requests</h5>
       </div>
     </div>
+    </div>
 
   </div>
 </template>
@@ -226,7 +363,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0x423c13b91F06989c97Be3441206fe7bfd4473A46'; // contract address
+const contractAddress = '0xA6DB4a399Ea1D31744aE74ECF6d4C012C21236E1'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -255,6 +392,7 @@ export default {
       requestDetails: '',
       deleteUserAddress: '',
       requestsList: [],
+      allUsers: [],
     };
   },
   computed: {
@@ -327,6 +465,36 @@ export default {
       }
     }
     },
+
+    async fetchAllUsers() {
+    try {
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+            // Call the smart contract method to get all registered users
+            const allUsers = await contract.methods.viewAllUsers().call();
+
+            // Convert salary from string to number and address to string
+            const formattedUsers = allUsers.map(user => {
+                return {
+                    username: user.username,
+                    address: user.userAddress,
+                    salary: Number(user.salary),
+                    role: user.role
+                };
+            });
+
+            this.allUsers = formattedUsers;
+        } else {
+            console.error('MetaMask extension not detected');
+        }
+    } catch (error) {
+        console.error('Error fetching all registered users:', error);
+    }
+},
+
+
 
    async deleteUser() {
     try {
@@ -645,6 +813,8 @@ export default {
   },
 
   mounted() {
+    // Fetch all registered users
+    this.fetchAllUsers();
     // Fetch main account balance when the component is mounted
     this.fetchMainAccountBalance();
     // Fetch requests when the component is mounted
@@ -821,5 +991,19 @@ export default {
   display: flex;
   justify-content: center;
   padding-top: 15px;
+}
+.userTables{
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-evenly;
+
+}
+.admin-users{
+  padding: 0px 20px 20px;
+  display: flex;
+  justify-content: start;
+}
+.adminUsers{
+  margin-top: 50px;
 }
 </style>
