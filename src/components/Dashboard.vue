@@ -146,7 +146,7 @@
         </div>
 
 
-        <!-- Modal -->
+        <!-- Approval Modal -->
         <div class="modal fade" id="approvalModal" role="dialog">
           <div class="modal-dialog">
             <!-- Modal content -->
@@ -157,10 +157,12 @@
                   data-dismiss="modal"></button>
               </div>
               <div class="modal-body">
-                  <div v-for="request in requestsList" :key="request.requestId">
-                    <p>{{ request.details }}</p>
-                    <p>{{ request.amountWei }} Ether</p>
-                    <p>Status: {{ getStatusLabel(request.status) }}</p>
+                  <div v-for="request in requestsList" :key="request.id">
+                    <p><strong>Id:  </strong> {{ request.id }}</p>
+                    <p><strong>user:  </strong> {{ request.user }}</p>
+                    <p><strong>Details:  </strong> {{ request.details }}</p>
+                    <p><strong>Amount:  </strong>{{ request.amountWei }} Ether</p>
+                    <p><strong>Status:  </strong> {{ getStatusLabel(request.status) }}</p>
 
                     <!-- Display approve and reject buttons for pending requests -->
                     <template v-if="request.status == 0">
@@ -255,19 +257,19 @@
 <div class="userTables" v-if="isUser || isAdmin">
   <div class="user-requests">
   <h1 class="title">Requests</h1>
-  <table class="table table-bordered table-hover table-dark">
+  <table class="table table-hover table-bordered table-dark table-lg">
     <thead>
       <tr>
-        <th>Request ID</th>
-        <th>Amount (Ether)</th>
-        <th>Details</th>
+        <!-- <th>Request ID</th> -->
+        <th>Amount (Eth)</th>
+        <th>Descriptions</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="request in userRequestTransactions" :key="request.requestId">
-        <td>{{ request.requestId }}</td>
-        <td>{{ request.amountWei / 1e18 }}</td>
+      <tr v-for="request in requestsList" :key="request.id">
+        <!-- <td>{{ request.id }}</td> -->
+        <td>{{ request.amountWei  }}</td>
         <td>{{ request.details }}</td>
         <td>{{ getStatusLabel(request.status) }}</td>
       </tr>
@@ -277,7 +279,7 @@
 
 <div class="user-requests">
   <h1 class="title">Deposits</h1>
-  <table class="table table-bordered table-hover table-dark">
+  <table class="table table-bordered table-hover table-dark table-lg">
     <thead>
       <tr>
         <th>Request ID</th>
@@ -286,9 +288,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="request in userRequestTransactions" :key="request.requestId">
+      <tr v-for="request in depositList" :key="request.requestId">
         <td>{{ request.requestId }}</td>
-        <td>{{ request.amountWei / 1e18 }}</td>
+        <td>{{ request.amountWei }}</td>
         <td>{{ request.details }}</td>
       </tr>
     </tbody>
@@ -530,12 +532,7 @@ export default {
         const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
         // Make a transaction to request money
-        await contract.methods
-          .requestMoney(
-            this.requestAmount,
-            this.requestDetails
-          )
-          .send({ from: userAddress });
+        await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
 
         console.log('Money request submitted successfully!');
 
@@ -781,19 +778,27 @@ export default {
         async fetchRequests() {
         try {
           if (window.ethereum){
-            // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            // const userAddress = accounts[0];
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const userAddress = accounts[0];
             const web3 = new Web3(window.ethereum);
             const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-            
 
             const totalRequests = await contract.methods.requestCounter().call();
+            const CEO_Address = await contract.methods.CEO().call();
 
             // Fetch each request individually
             const requests = [];
             for (let i = 1; i <= totalRequests; i++) {
                 const request = await contract.methods.requests(i).call();
-                requests.push(request);
+                // Check if the request belongs to the current user
+                if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
+                  console.log("This is CEO");
+                    requests.push(request);
+                }
+                else if (request.user.toLowerCase() === userAddress.toLowerCase()) {
+                  console.log("This is NOOOOT");
+                  requests.push(request);
+                }
             }
 
             // Update the data property with the list of requests
@@ -995,8 +1000,10 @@ export default {
 .userTables{
   margin-top: 50px;
   display: flex;
-  justify-content: space-evenly;
-
+  justify-content: space-around;
+}
+.user-requests{
+  table-layout: fixed;
 }
 .admin-users{
   padding: 0px 20px 20px;
@@ -1006,4 +1013,8 @@ export default {
 .adminUsers{
   margin-top: 50px;
 }
+.table-lg {
+  font-size: auto; /* Adjust the font size as needed */
+}
+
 </style>
