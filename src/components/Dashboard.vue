@@ -3,7 +3,7 @@
     <div v-if="!isUser && !isAdmin && !isCEO" id="connect">
     <button class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
     </div>
-    <div v-if="isAdmin" class="admin-btns">
+    <div v-if="isAdmin" class="admin-btns" style="background-color: #11235A;">
       <!-- Specific Features for Admin -->
       <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#viewModal">View
         Users</button>
@@ -14,7 +14,7 @@
 
       
       <!-- Modal -->
-      <div class="modal fade bd-example-modal-lg" id="viewModal" role="dialog">
+      <div class="modal fade" id="viewModal" role="dialog">
         <div class="modal-dialog modal-lg">
           <!-- Modal content -->
           <div class="modal-content">
@@ -50,7 +50,7 @@
       </div>
       
 
-      <!-- Modal -->
+      <!-- Delete User Modal -->
       <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content -->
@@ -77,7 +77,7 @@
       </div>
 
 
-      <!-- Modal -->
+      <!--Register User Modal -->
       <div class="modal fade" id="registerModal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content -->
@@ -121,7 +121,7 @@
       </div>
     </div>
 
-    <div v-if="isCEO || isUser || isAdmin" class="top">
+    <div v-if="isCEO || isUser || isAdmin" class="top" style="background-color: #11235A;">
       <!-- Specific Features for CEO -->
       <div class="request-btns">
         <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
@@ -129,9 +129,11 @@
         <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal">Deposits</button>
         <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
 
-        <!-- Modal -->
+
+
+        <!-- view Deposits Modal -->
         <div class="modal fade" id="depositModal" role="dialog">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-lg">
             <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
@@ -140,6 +142,25 @@
                   data-dismiss="modal"></button>
               </div>
               <div class="modal-body">
+                <div class="user-requests">
+                  <h1 class="title">Deposits</h1>
+                 <table class="table table-bordered table-hover table-dark table-lg">
+                  <thead>
+                   <tr>
+                   <th>Request ID</th>
+                   <th>Amount (Ether)</th>
+                   <th>Details</th>
+                   </tr>
+                  </thead>
+                 <tbody>
+                  <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
+                  <td>{{ DepositTransaction.id }}</td>
+                  <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
+                  <td>{{ DepositTransaction.details }}</td>
+                 </tr>
+                 </tbody>
+                 </table>
+              </div>
               </div>
             </div>
           </div>
@@ -222,16 +243,16 @@
                   data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Input fields for REQUEST INFORMATION -->
-                <form @submit.prevent="submitRequest">
+                <!-- Input fields for Deposit INFORMATION -->
+                <form @submit.prevent="depositMoney">
                   <div class="form-group">
-                    <label for="requestAmount">Amount</label>
-                    <input type="number" class="form-control" id="requestAmount" v-model="requestAmount" step="0.01" min="0"
+                    <label for="depositAmount">Amount</label>
+                    <input type="number" class="form-control" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
                       placeholder="Ether Amount in Ether" required>
                   </div>
                   <div class="form-group">
-                    <label for="address">Details of Deposit</label>
-                    <input type="text" class="form-control" id="requestDetails" v-model="requestDetails" required>
+                    <label for="depositDetails">Details of Deposit</label>
+                    <input type="text" class="form-control" id="depositDetails" v-model="depositDetails" required>
                   </div>
                   <div class="form-footer">
                     <button type="submit" class="btn btn-success">Submit</button>
@@ -245,11 +266,6 @@
 
       <div v-if="isUser || isCEO || isAdmin" class="deposits">
         <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#IncomeModal">Deposit Money</button>
-        <input type="number" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
-          placeholder="Deposit Amount in Ether" />
-        <!-- Deposit Button (Common Feature) -->
-        <button class="btn btn-success" @click="depositMoney">Deposit Money</button>
-        <!-- Request Money Button (Common Feature) -->
       </div>
     </div>
     <hr>
@@ -288,10 +304,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="request in depositList" :key="request.requestId">
-        <td>{{ request.requestId }}</td>
-        <td>{{ request.amountWei }}</td>
-        <td>{{ request.details }}</td>
+      <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
+        <td>{{ DepositTransaction.id }}</td>
+        <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
+        <td>{{ DepositTransaction.details }}</td>
       </tr>
     </tbody>
   </table>
@@ -365,13 +381,14 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xA6DB4a399Ea1D31744aE74ECF6d4C012C21236E1'; // contract address
+const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
 
 export default {
   name: 'DashboardView',
   data() {
     return {
       depositAmount: 0,
+      depositDetails: '',
       mainAccountBalance: 0,
       NumberOfUser: 0,
       TotalTransactions: 0,
@@ -394,6 +411,7 @@ export default {
       requestDetails: '',
       deleteUserAddress: '',
       requestsList: [],
+      depositList: [],
       allUsers: [],
     };
   },
@@ -720,37 +738,31 @@ export default {
 
 
     async depositMoney() {
-
-      try {
-        // Check if MetaMask is installed
+    try {
         if (window.ethereum) {
-          // Request account access
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-          // Get user's Ethereum address
-          const userAddress = accounts[0];
+            console.log(this.depositDetails, this.depositAmount );
+            // Include details when calling the deposit function
+            await contract.methods.addFunds(this.depositDetails).send({
+                from: userAddress,
+                value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
+            });
 
-          // Create a Web3 instance
-          const web3 = new Web3(window.ethereum);
-
-          // Load the smart contract
-          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-          // Send funds to the smart contract
-          await contract.methods.addFunds().send({
-            from: userAddress,
-            value: web3.utils.toWei(this.depositAmount.toString(), 'ether'), // Set the amount you want to deposit
-          });
-
-          console.log('Deposit successful!');
+            console.log('Deposit successful!');
         } else {
-          window.alert('MetaMask extension not detected');
-          console.error('MetaMask extension not detected');
+            window.alert('MetaMask extension not detected');
+            console.error('MetaMask extension not detected');
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error depositing money:', error);
-      }
-    },
+    }
+},
+
+
 
 
     approvalsCEO() {
@@ -785,6 +797,7 @@ export default {
 
             const totalRequests = await contract.methods.requestCounter().call();
             const CEO_Address = await contract.methods.CEO().call();
+            console.log(totalRequests)
 
             // Fetch each request individually
             const requests = [];
@@ -792,11 +805,9 @@ export default {
                 const request = await contract.methods.requests(i).call();
                 // Check if the request belongs to the current user
                 if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
-                  console.log("This is CEO");
                     requests.push(request);
                 }
                 else if (request.user.toLowerCase() === userAddress.toLowerCase()) {
-                  console.log("This is NOOOOT");
                   requests.push(request);
                 }
             }
@@ -815,15 +826,54 @@ export default {
     },
 
 
+    async fetchDeposits() {
+    try {
+        if (window.ethereum) {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+            
+            const CEO_Address = await contract.methods.CEO().call();
+            const totalDeposits = await contract.methods.totalIncomeTransactions().call();
+
+            // Fetch all deposit transactions
+            const deposits = [];
+            for (let i = 0; i < totalDeposits; i++) {
+                const deposit = await contract.methods.depositTransactions(i).call();
+                if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
+                deposits.push(deposit);
+                }
+                else if (deposit.depositor.toLowerCase() === userAddress.toLowerCase()) {
+                  deposits.push(deposit);
+                }
+
+            }
+
+            // Update the data property with the list of deposit transactions
+            this.depositList = deposits.reverse(); // Reverse the array to display the latest transactions first
+
+            console.log('Deposits List:', this.depositList); // Log the entire list to the console
+        } else {
+            window.alert('MetaMask extension not detected');
+            console.error('MetaMask extension not detected');
+        }
+    } catch (error) {
+        console.error('Error fetching deposits:', error);
+    }
+},
+
+
+
   },
 
   mounted() {
-    // Fetch all registered users
-    this.fetchAllUsers();
-    // Fetch main account balance when the component is mounted
-    this.fetchMainAccountBalance();
-    // Fetch requests when the component is mounted
-    this.fetchRequests();
+
+    this.checkMetaMaskConnection();  // Check if MetaMask is already connected
+    this.fetchAllUsers();  // Fetch all registered users
+    this.fetchMainAccountBalance();  // Fetch main account balance when the component is mounted
+    this.fetchRequests();  // Fetch requests when the component is mounted
+    this.fetchDeposits(); // Fetch deposits when the component is mounted
 
     // Check for the user's role when the component is mounted
     if (!this.$store.state.userRole) {
@@ -831,8 +881,6 @@ export default {
       this.connectMetaMask();
     }
 
-    // Check if MetaMask is already connected
-    this.checkMetaMaskConnection();
   },
 };
 </script>
