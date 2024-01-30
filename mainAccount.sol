@@ -236,14 +236,44 @@ userDetails.pop();
 ////////////////////////////////////////////////////////////////////////////
 /////////////// Start Adding Funds to Contract Function ////////////////////
 ////////////////////////////////////////////////////////////////////////////
-    function addFunds() external payable {
-        require(msg.value > 0, "Amount should be greater than zero");
-        balances[address(this)] += msg.value;
-        totalIncome = totalIncome + msg.value;
-        totalIncomeTransactions = totalIncomeTransactions + 1;
-        totalTransactions = totalTransactions + 1;
-        emit FundsAdded(msg.sender, msg.value);
-    }
+// Array to store deposit transactions
+struct DepositTransaction {
+    uint256 id;
+    address depositor;
+    uint256 amount;
+    string details;
+}
+
+DepositTransaction[] public depositTransactions;
+
+// Updated addFunds function
+function addFunds(string memory _details) external payable {
+    require(msg.value > 0, "Amount should be greater than zero");
+
+    // Increment totalTransactions
+    totalTransactions++;
+
+    // Create a new deposit transaction
+    DepositTransaction memory newTransaction = DepositTransaction({
+        id: totalTransactions,
+        depositor: msg.sender,
+        amount: msg.value,
+        details: _details
+    });
+
+    // Add the new transaction to the array
+    depositTransactions.push(newTransaction);
+
+    // Log the details of the deposit
+    emit FundsAdded(msg.sender, msg.value, totalTransactions, _details);
+
+    // Update contract balances
+    balances[address(this)] += msg.value;
+    totalIncome += msg.value;
+    totalIncomeTransactions++;
+}
+event FundsAdded(address indexed account, uint256 amount, uint256 transactionId, string details);
+
 ///////////////////////////////////////////////////////////////////////////
 /////////////// End Adding Funds to Contract Function ////////////////////
 //////////////////////////////////////////////////////////////////////////
