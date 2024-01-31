@@ -148,6 +148,7 @@
                   <thead>
                    <tr>
                    <th>Request ID</th>
+                   <th>Address</th>
                    <th>Amount (Ether)</th>
                    <th>Details</th>
                    </tr>
@@ -155,6 +156,7 @@
                  <tbody>
                   <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
                   <td>{{ DepositTransaction.id }}</td>
+                  <td>{{ DepositTransaction.depositor }}</td>
                   <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
                   <td>{{ DepositTransaction.details }}</td>
                  </tr>
@@ -293,7 +295,7 @@
   </table>
 </div>
 
-<div class="user-requests">
+<div class="user-deposits">
   <h1 class="title">Deposits</h1>
   <table class="table table-bordered table-hover table-dark table-lg">
     <thead>
@@ -381,7 +383,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
+const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -1050,7 +1052,7 @@ export default {
   display: flex;
   justify-content: space-around;
 }
-.user-requests{
+.user-requests .user-deposits{
   table-layout: fixed;
 }
 .admin-users{
