@@ -148,7 +148,7 @@
                   <thead>
                    <tr>
                    <th>Request ID</th>
-                   <!-- <th>username</th> -->
+                   <th>username</th>
                    <th>Address</th>
                    <th>Amount (Ether)</th>
                    <th>Details</th>
@@ -157,7 +157,7 @@
                  <tbody>
                   <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
                   <td>{{ DepositTransaction.id }}</td>
-                  <!-- <td>{{ fetchRegisteredUserName(DepositTransaction.depositor) }}</td> -->
+                  <td>{{ (DepositTransaction.username) }}</td>
                   <td>{{ DepositTransaction.depositor }}</td>
                   <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
                   <td>{{ DepositTransaction.details }}</td>
@@ -184,7 +184,7 @@
               <div class="modal-body">
                   <div v-for="request in requestsList" :key="request.id">
                     <p><strong>Id:  </strong> {{ request.id }}</p>
-                    <!-- <p><strong>Username:  </strong> {{ fetchRegisteredUserName(request.user) }}</p> -->
+                    <p><strong>Username:  </strong> {{ request.username }}</p>
                     <p><strong>Address:  </strong> {{ request.user }}</p>
                     <p><strong>Details:  </strong> {{ request.details }}</p>
                     <p><strong>Amount:  </strong>{{ request.amountWei }} Ether</p>
@@ -397,7 +397,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
+const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -831,6 +831,7 @@ export default {
             const requests = [];
             for (let i = 1; i <= totalRequests; i++) {
                 const request = await contract.methods.requests(i).call();
+                request.username = await contract.methods.getUserName(request.user).call();
                 // Check if the request belongs to the current user
                 if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
                     requests.push(request);
@@ -869,6 +870,8 @@ export default {
             const deposits = [];
             for (let i = 0; i < totalDeposits; i++) {
                 const deposit = await contract.methods.depositTransactions(i).call();
+                deposit.username = await contract.methods.getUserName(deposit.depositor).call();
+                console.log('deposits' ,deposit)
                 if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
                 deposits.push(deposit);
                 }
@@ -890,28 +893,6 @@ export default {
         console.error('Error fetching deposits:', error);
     }
 },
-// async fetchRegisteredUserName(userAddress) {
-//       try {
-//         if (window.ethereum) {
-//           // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-//           // const userAddress = accounts[0];
-//           const web3 = new Web3(window.ethereum);
-//           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-//           // Assuming you have a method in your Smart Contract to get the user's name
-//           const userName = await contract.methods.getUserName(userAddress).call();
-//           this.registeredUserName = userName;
-//           if (this.registeredUserName == ''){
-//             this.registeredUserName = 'Guest';
-//           }
-//         } else {
-//           console.error('MetaMask extension not detected');
-//         }
-//       } catch (error) {
-//         console.error('Error fetching registered user name:', error);
-//       }
-//     },
-
 
 
   },
