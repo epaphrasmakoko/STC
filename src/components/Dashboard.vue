@@ -390,19 +390,25 @@
       </div>
     </div>
     </div>
+    <loading-overlay :isLoading="isLoading" />
 
   </div>
 </template>
 
 <script>
+import LoadingOverlay from './LoadingOverlay.vue';
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
 const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
 
 export default {
   name: 'DashboardView',
+  components: {
+    LoadingOverlay,
+  },
   data() {
     return {
+      isLoading: true, // Set to true initially to show the loading effect
       depositAmount: 0,
       depositDetails: '',
       mainAccountBalance: 0,
@@ -910,6 +916,11 @@ export default {
       // If the role is not present, trigger the MetaMask connection process
       this.connectMetaMask();
     }
+
+    // Simulate data loading delay (replace with your actual data loading logic)
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 2000); // Adjust the timeout duration as needed
 
   },
 };

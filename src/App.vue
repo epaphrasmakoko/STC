@@ -6,12 +6,14 @@
       <h2>Welcome, <strong>{{ registeredUserName }}</strong></h2>
     </div>
     <router-view />
+    <loading-overlay :isLoading="isLoading" />
   </div>
 </template>
 
 <script>
 
 // import DashboardView from './components/Dashboard.vue';
+import LoadingOverlay from './components/LoadingOverlay.vue';
 import Web3 from 'web3';
 import YourSmartContractABI from './MainAccountABI.js'; // Adjust the path accordingly
 const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
@@ -19,15 +21,20 @@ const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contrac
 export default {
   name: "App",
   components: {
+    LoadingOverlay,
   },
     data() {
     return {
+      isLoading: true, // Set to true initially to show the loading effect
       registeredUserName: 'Guest',
     };
   },
   mounted() {
     // Assuming you have a method in your Smart Contract to get the registered user's name
     this.fetchRegisteredUserName();
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 2000); // Adjust the timeout duration as needed
   },
   methods: {
     async fetchRegisteredUserName() {
