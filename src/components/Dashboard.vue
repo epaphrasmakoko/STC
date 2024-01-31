@@ -148,6 +148,7 @@
                   <thead>
                    <tr>
                    <th>Request ID</th>
+                   <!-- <th>username</th> -->
                    <th>Address</th>
                    <th>Amount (Ether)</th>
                    <th>Details</th>
@@ -156,6 +157,7 @@
                  <tbody>
                   <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
                   <td>{{ DepositTransaction.id }}</td>
+                  <!-- <td>{{ fetchRegisteredUserName(DepositTransaction.depositor) }}</td> -->
                   <td>{{ DepositTransaction.depositor }}</td>
                   <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
                   <td>{{ DepositTransaction.details }}</td>
@@ -171,7 +173,7 @@
 
         <!-- Approval Modal -->
         <div class="modal fade" id="approvalModal" role="dialog">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-lg">
             <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
@@ -182,10 +184,11 @@
               <div class="modal-body">
                   <div v-for="request in requestsList" :key="request.id">
                     <p><strong>Id:  </strong> {{ request.id }}</p>
-                    <p><strong>user:  </strong> {{ request.user }}</p>
+                    <!-- <p><strong>Username:  </strong> {{ fetchRegisteredUserName(request.user) }}</p> -->
+                    <p><strong>Address:  </strong> {{ request.user }}</p>
                     <p><strong>Details:  </strong> {{ request.details }}</p>
                     <p><strong>Amount:  </strong>{{ request.amountWei }} Ether</p>
-                    <p><strong>Status:  </strong> {{ getStatusLabel(request.status) }}</p>
+                    <p ><strong>Status:  </strong ><span v-html="getStatusLabelWithColor(request.status)"></span></p>
 
                     <!-- Display approve and reject buttons for pending requests -->
                     <template v-if="request.status == 0">
@@ -273,12 +276,12 @@
     <hr>
 
 <div class="userTables" v-if="isUser || isAdmin">
-  <div class="user-requests">
+  <div class="user-requests" style="width: 700px;">
   <h1 class="title">Requests</h1>
   <table class="table table-hover table-bordered table-dark table-lg">
     <thead>
       <tr>
-        <!-- <th>Request ID</th> -->
+        <th>Request ID</th>
         <th>Amount (Eth)</th>
         <th>Descriptions</th>
         <th>Status</th>
@@ -286,18 +289,24 @@
     </thead>
     <tbody>
       <tr v-for="request in requestsList" :key="request.id">
-        <!-- <td>{{ request.id }}</td> -->
+        <td>{{ request.id }}</td>
         <td>{{ request.amountWei  }}</td>
         <td>{{ request.details }}</td>
-        <td>{{ getStatusLabel(request.status) }}</td>
+        <td v-html="getStatusLabelWithColor(request.status)"></td>
+      </tr>
+      <tr style="height: 50px;">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<div class="user-deposits">
+<div class="user-deposits" style="width: 700px;">
   <h1 class="title">Deposits</h1>
-  <table class="table table-bordered table-hover table-dark table-lg">
+  <table class="table table-bordered table-hover table-dark table-lg" >
     <thead>
       <tr>
         <th>Request ID</th>
@@ -310,6 +319,11 @@
         <td>{{ DepositTransaction.id }}</td>
         <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
         <td>{{ DepositTransaction.details }}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td></td>
+        <td></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -383,7 +397,7 @@
 <script>
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
+const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -414,7 +428,9 @@ export default {
       deleteUserAddress: '',
       requestsList: [],
       depositList: [],
+      defaultRowCount: 5, // Number of default empty rows
       allUsers: [],
+      registeredUserName: 'Guest',
     };
   },
   computed: {
@@ -429,7 +445,7 @@ export default {
     isUser() {
       // Implement logic to determine if user is the regitered in system
       return this.$store.state.userRole === 'user';
-    }
+    },
   },
 
 
@@ -569,6 +585,23 @@ export default {
       }
     },
 
+    getStatusLabelWithColor(status) {
+      const color = this.getColorByStatus(status);
+      return `<span style="color: ${color}">${this.getStatusLabel(status)}</span>`;
+    },
+    getColorByStatus(status) {
+      switch (parseInt(status)) {
+        case 0:
+          return 'orange'; // Set the color for 'Pending'
+        case 1:
+          return 'green'; // Set the color for 'Approved'
+        case 2:
+          return 'red'; // Set the color for 'Rejected'
+        default:
+          return 'black'; // Set a default color for 'Unknown'
+      }
+    },
+
     getStatusLabel(status) {
       switch (parseInt(status)) {
         case 0:
@@ -632,16 +665,9 @@ export default {
       try {
         // Check if MetaMask is installed
         if (window.ethereum) {
-          // Request account access
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-          // Get user's Ethereum address
           const userAddress = accounts[0];
-
-          // Create a Web3 instance
           const web3 = new Web3(window.ethereum);
-
-          // Load the smart contract
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
           // Make a transaction to register the user
@@ -864,6 +890,27 @@ export default {
         console.error('Error fetching deposits:', error);
     }
 },
+// async fetchRegisteredUserName(userAddress) {
+//       try {
+//         if (window.ethereum) {
+//           // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+//           // const userAddress = accounts[0];
+//           const web3 = new Web3(window.ethereum);
+//           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+//           // Assuming you have a method in your Smart Contract to get the user's name
+//           const userName = await contract.methods.getUserName(userAddress).call();
+//           this.registeredUserName = userName;
+//           if (this.registeredUserName == ''){
+//             this.registeredUserName = 'Guest';
+//           }
+//         } else {
+//           console.error('MetaMask extension not detected');
+//         }
+//       } catch (error) {
+//         console.error('Error fetching registered user name:', error);
+//       }
+//     },
 
 
 
