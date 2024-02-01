@@ -124,10 +124,10 @@
     <div v-if="isCEO || isUser || isAdmin" class="top" style="background-color: #11235A;">
       <!-- Specific Features for CEO -->
       <div class="request-btns">
-        <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal">Request Money</button>
-        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal">Approvals</button>
-        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal">Deposits</button>
-        <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries">Distribute Salaries</button>
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal" title="Request money from the Organization">Request Money</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal" title="Approve and reject all requests">Approvals</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal" title="view all deposits to organization account">Deposits</button>
+        <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries" title="Distribute Salaries to all employees">Distribute Salaries</button>
 
 
 
@@ -270,7 +270,7 @@
 
 
       <div v-if="isUser || isCEO || isAdmin" class="deposits">
-        <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#IncomeModal">Deposit Money</button>
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#IncomeModal" title="donating/funding/contributing money to the Organization">Deposit Money</button>
       </div>
     </div>
     <hr>
@@ -332,15 +332,15 @@
 
     <div v-if="isCEO">
     <div class="intro">
-      <div class="intro-card">
+      <div class="intro-card" title="Organization Account Balance">
         <p>{{ mainAccountBalance }} Ether</p>
         <h5>Main account Balance</h5>
       </div>
-      <div class="intro-card">
+      <div class="intro-card" title="All registered users in STC">
         <p>{{ NumberOfUser }}</p>
         <h5>Total Registered Users</h5>
       </div>
-      <div class="intro-card">
+      <div class="intro-card" title="All transaction done in the STC blockchain Network">
         <p>{{ TotalTransactions }}</p>
         <h5>Total Transactions</h5>
       </div>
@@ -348,19 +348,19 @@
     <hr>
     <h1 class="title">Income & Salaries</h1>
     <div class="salaries">
-      <div class="salaries-card">
+      <div class="salaries-card" title="Total amount of salaries distributes to the employees">
         <p>{{ TotalSalariesAmount }} Ether</p>
         <h5>Total Amount of Salaries Distributed</h5>
       </div>
-      <div class="salaries-card">
-        <p>{{ TotalSalaryTransactions }}</p>
+      <div class="salaries-card" title="Total transactions of salaries ditributed">
+        <p>{{ TotalSalaryTransactions }} </p>
         <h5>Total Salaries Transactions</h5>
       </div>
-      <div class="salaries-card">
+      <div class="salaries-card" title="This can be donation, funds and contributions">
         <p>{{ TotalIncome }} Ether</p>
         <h5>Total Amount of Income</h5>
       </div>
-      <div class="salaries-card">
+      <div class="salaries-card" title="All deposits transactions">
         <p>{{ TotalIncomeTransactions }}</p>
         <h5>Total Income Transactions</h5>
       </div>
@@ -368,23 +368,23 @@
     <hr>
     <h1 class="title">Requests</h1>
     <div class="requests">
-      <div class="request-card">
+      <div class="request-card" title="Total amount of money approved">
         <p>{{ TotalAmountRequests }} Ether</p>
         <h5>Total Amount Approved</h5>
       </div>
-      <div class="request-card">
+      <div class="request-card" title="Total transactions of requests">
         <p>{{ TotalRequests }}</p>
         <h5>Total Requests Transactions</h5>
       </div>
-      <div class="request-card">
+      <div class="request-card" title="Total number of approved transactions">
         <p>{{ ApprovedRequests }}</p>
         <h5>Approved Requests</h5>
       </div>
-      <div class="request-card">
+      <div class="request-card" title="Total number of Rejected transactions">
         <p>{{ RejectedRequests }}</p>
         <h5>Rejected Requests</h5>
       </div>
-      <div class="request-card">
+      <div class="request-card" title="Total number of Pending transactions">
         <p>{{ PendingRequests }}</p>
         <h5>Pending Requests</h5>
       </div>
@@ -399,7 +399,7 @@
 import LoadingOverlay from './LoadingOverlay.vue';
 import Web3 from 'web3';
 import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
-const contractAddress = '0xDc5E208a8883047C8BcFa58c19dC45B18c926F1d'; // contract address
+const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
 
 export default {
   name: 'DashboardView',
@@ -551,6 +551,7 @@ export default {
         
         // Make a transaction to delete the user
         await contract.methods.deleteUser(this.deleteUserAddress).send({ from: userAddress });
+        this.fetchAllUsers();
 
       } else {
         window.alert('MetaMask extension not detected');
@@ -575,6 +576,7 @@ export default {
 
         // Make a transaction to request money
         await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
+        this.fetchRequests();
 
         console.log('Money request submitted successfully!');
 
@@ -635,6 +637,7 @@ export default {
             await contract.methods.processRequest(requestId, true).send({ from: userAddress });
 
             // Fetch the updated list of requests
+            this.fetchMainAccountBalance();
             this.fetchRequests();
           } else{
           window.alert('MetaMask extension not detected');
@@ -657,6 +660,7 @@ export default {
             await contract.methods.processRequest(requestId, false).send({ from: userAddress });
 
             // Fetch the updated list of requests
+            this.fetchMainAccountBalance();
             this.fetchRequests();
           } else{
           window.alert('MetaMask extension not detected');
@@ -685,6 +689,8 @@ export default {
               this.newUser.role
             )
             .send({ from: userAddress });
+          
+            this.fetchAllUsers();
 
           console.log('User registration successful!');
         } else {
@@ -785,6 +791,7 @@ export default {
                 from: userAddress,
                 value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
             });
+            this.fetchDeposits();
 
             console.log('Deposit successful!');
         } else {
@@ -798,13 +805,6 @@ export default {
 
 
 
-
-    approvalsCEO() {
-      // Implement CEO-specific action
-      console.log('CEO-specific action');
-    },
-
-
     async distributeSalaries() {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -815,6 +815,9 @@ export default {
         // Call the distributeSalary function from the smart contract
         await contract.methods.distributeSalary().send({ from: userAddress, });
         console.log('Salaries distributed successfully!');
+
+        // Fetch the updated list of requests
+        this.fetchMainAccountBalance();
 
       } catch (error) {
         console.error('Error distributing salaries:', error);
@@ -910,7 +913,14 @@ export default {
     this.fetchMainAccountBalance();  // Fetch main account balance when the component is mounted
     this.fetchRequests();  // Fetch requests when the component is mounted
     this.fetchDeposits(); // Fetch deposits when the component is mounted
+    this.fetchMainAccountBalance(); 
+    this.connectMetaMask();
 
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', () => {
+        window.location.reload();
+      });
+    }
     // Check for the user's role when the component is mounted
     if (!this.$store.state.userRole) {
       // If the role is not present, trigger the MetaMask connection process
