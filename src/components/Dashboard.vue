@@ -5,11 +5,11 @@
     </div>
     <div v-if="isAdmin" class="admin-btns" style="background-color: #11235A;">
       <!-- Specific Features for Admin -->
-      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#viewModal">View
+      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#viewModal" title="View All users in STC">View
         Users</button>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Register
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal" title="register a user">Register
         User</button>
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" title="delete a user">Delete
         User</button>
 
 
@@ -603,6 +603,30 @@ export default {
     },
 
 
+    async submitRequest() {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
+          this.fetchMainAccountBalance();
+          this.fetchRequests();
+
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error Requesting Money:', error);
+      } finally {
+        this.requestAmount = 0;
+        this.requestDetails = '';
+      }
+    },
+
+
     async approveRequest(requestId) {
       try {
         if (window.ethereum) {
@@ -613,7 +637,6 @@ export default {
 
           await contract.methods.processRequest(requestId, true).send({ from: userAddress });
 
-          // Fetch the updated list of requests
           this.fetchMainAccountBalance();
           this.fetchRequests();
         } else {
@@ -633,10 +656,8 @@ export default {
           const web3 = new Web3(window.ethereum);
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-          // Call the smart contract method to reject the request
           await contract.methods.processRequest(requestId, false).send({ from: userAddress });
 
-          // Fetch the updated list of requests
           this.fetchMainAccountBalance();
           this.fetchRequests();
         } else {
@@ -644,29 +665,6 @@ export default {
         }
       } catch (error) {
         console.error('Error rejecting request:', error);
-      }
-    },
-
-
-    async submitRequest() {
-      try {
-        if (window.ethereum) {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const userAddress = accounts[0];
-          const web3 = new Web3(window.ethereum);
-          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-          await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
-          this.fetchRequests();
-
-        } else {
-          window.alert('MetaMask extension not detected');
-        }
-      } catch (error) {
-        console.error('Error Requesting Money:', error);
-      } finally {
-        this.requestAmount = 0;
-        this.requestDetails = '';
       }
     },
 
@@ -680,7 +678,6 @@ export default {
 
         await contract.methods.distributeSalary().send({ from: userAddress, });
 
-        // Fetch the updated list of requests
         this.fetchMainAccountBalance();
 
       } catch (error) {
@@ -767,6 +764,7 @@ export default {
             from: userAddress,
             value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
           });
+          this.fetchMainAccountBalance();
           this.fetchDeposits();
 
         } else {
@@ -856,7 +854,6 @@ export default {
     this.fetchMainAccountBalance();  // Fetch main account balance when the component is mounted
     this.fetchRequests();  // Fetch requests when the component is mounted
     this.fetchDeposits(); // Fetch deposits when the component is mounted
-    this.fetchMainAccountBalance();
     this.connectMetaMask();
 
     if (window.ethereum) {
