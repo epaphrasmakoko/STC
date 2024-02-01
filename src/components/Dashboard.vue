@@ -449,19 +449,6 @@ export default {
 
   methods: {
 
-    async checkMetaMaskConnection() {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          const isConnected = accounts.length > 0;
-          this.isMetaMaskConnected = isConnected;
-        } catch (error) {
-          console.error('Error checking MetaMask connection:', error);
-        }
-      }
-    },
-
-
     async connectMetaMask() {
       if (!this.$store.state.userRole) {
         if (window.ethereum) {
@@ -584,28 +571,6 @@ export default {
     },
 
 
-    async submitRequest() {
-      try {
-        if (window.ethereum) {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const userAddress = accounts[0];
-          const web3 = new Web3(window.ethereum);
-          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-          await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
-          this.fetchRequests();
-
-        } else {
-          window.alert('MetaMask extension not detected');
-        }
-      } catch (error) {
-        console.error('Error Requesting Money:', error);
-      } finally {
-        this.requestAmount = 0;
-        this.requestDetails = '';
-      }
-    },
-
     getStatusLabelWithColor(status) {
       const color = this.getColorByStatus(status);
       return `<span style="color: ${color}">${this.getStatusLabel(status)}</span>`;
@@ -679,6 +644,47 @@ export default {
         }
       } catch (error) {
         console.error('Error rejecting request:', error);
+      }
+    },
+
+
+    async submitRequest() {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
+          this.fetchRequests();
+
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error Requesting Money:', error);
+      } finally {
+        this.requestAmount = 0;
+        this.requestDetails = '';
+      }
+    },
+
+
+    async distributeSalaries() {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+        await contract.methods.distributeSalary().send({ from: userAddress, });
+
+        // Fetch the updated list of requests
+        this.fetchMainAccountBalance();
+
+      } catch (error) {
+        console.error('Error distributing salaries:', error);
       }
     },
 
@@ -757,7 +763,6 @@ export default {
           const web3 = new Web3(window.ethereum);
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-          // Include details when calling the deposit function
           await contract.methods.addFunds(this.depositDetails).send({
             from: userAddress,
             value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
@@ -776,24 +781,6 @@ export default {
     },
 
 
-
-    async distributeSalaries() {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-        await contract.methods.distributeSalary().send({ from: userAddress, });
-
-        // Fetch the updated list of requests
-        this.fetchMainAccountBalance();
-
-      } catch (error) {
-        console.error('Error distributing salaries:', error);
-      }
-    },
-
     async fetchRequests() {
       try {
         if (window.ethereum) {
@@ -805,12 +792,11 @@ export default {
           const totalRequests = await contract.methods.requestCounter().call();
           const CEO_Address = await contract.methods.CEO().call();
 
-          // Fetch each request individually
           const requests = [];
           for (let i = 1; i <= totalRequests; i++) {
             const request = await contract.methods.requests(i).call();
             request.username = await contract.methods.getUserName(request.user).call();
-            // Check if the request belongs to the current user
+
             if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
               requests.push(request);
             }
@@ -818,7 +804,7 @@ export default {
               requests.push(request);
             }
           }
-          this.requestsList = requests.reverse(); 
+          this.requestsList = requests.reverse();
 
         } else {
           window.alert('MetaMask extension not detected');
@@ -852,8 +838,8 @@ export default {
             }
 
           }
-          this.depositList = deposits.reverse(); 
-          
+          this.depositList = deposits.reverse();
+
         } else {
           window.alert('MetaMask extension not detected');
         }
@@ -866,8 +852,6 @@ export default {
   },
 
   mounted() {
-
-    this.checkMetaMaskConnection();  // Check if MetaMask is already connected
     this.fetchAllUsers();  // Fetch all registered users
     this.fetchMainAccountBalance();  // Fetch main account balance when the component is mounted
     this.fetchRequests();  // Fetch requests when the component is mounted
@@ -889,7 +873,6 @@ export default {
     setTimeout(() => {
       this.isLoading = false;
     }, 1500); //timeout duration
-
   },
 };
 </script>
