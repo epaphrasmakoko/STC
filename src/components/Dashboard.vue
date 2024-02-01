@@ -1,7 +1,7 @@
 <template>
   <div id="dashboard">
     <div v-if="!isUser && !isAdmin && !isCEO" id="connect">
-    <button class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
+      <button class="btn btn-dark" @click="connectMetaMask"><strong>Connect To Your Metamask Wallet</strong></button>
     </div>
     <div v-if="isAdmin" class="admin-btns" style="background-color: #11235A;">
       <!-- Specific Features for Admin -->
@@ -12,14 +12,13 @@
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
         User</button>
 
-      
-      <!-- Modal -->
+
+      <!-- View All User model -->
       <div class="modal fade" id="viewModal" role="dialog">
         <div class="modal-dialog modal-lg">
-          <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Total Users: <strong>{{NumberOfUser}}</strong></h4>
+              <h4 class="modal-title">Total Users: <strong>{{ NumberOfUser }}</strong></h4>
               <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                 data-dismiss="modal"></button>
             </div>
@@ -27,33 +26,32 @@
               <div class="admin-users">
                 <table class="table table-bordered table-hover table-dark">
                   <thead>
-                   <tr>
-                   <th>Username</th>
-                   <th>Address</th>
-                   <th>Salary (Ether)</th>
-                   <th>Role</th>
-                   </tr>
+                    <tr>
+                      <th>Username</th>
+                      <th>Address</th>
+                      <th>Salary (Ether)</th>
+                      <th>Role</th>
+                    </tr>
                   </thead>
-                <tbody>
-                  <tr v-for="user in allUsers" :key="user.address">
-                   <td>{{ user.username }}</td>
-                   <td>{{ user.address }}</td>
-                   <td>{{ user.salary / 1e18 }}</td>
-                   <td>{{ user.role }}</td>
-                   </tr>
-                </tbody>
+                  <tbody>
+                    <tr v-for="user in allUsers" :key="user.address">
+                      <td>{{ user.username }}</td>
+                      <td>{{ user.address }}</td>
+                      <td>{{ user.salary / 1e18 }}</td>
+                      <td>{{ user.role }}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
 
       <!-- Delete User Modal -->
       <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog">
-          <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Delete User</h4>
@@ -61,7 +59,6 @@
                 data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <!-- Delete user by providing Address of the User -->
               <form @submit.prevent="deleteUser">
                 <div class="form-group">
                   <label for="address">Address:</label>
@@ -80,7 +77,6 @@
       <!--Register User Modal -->
       <div class="modal fade" id="registerModal" role="dialog">
         <div class="modal-dialog">
-          <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Fill User Information</h4>
@@ -88,7 +84,6 @@
                 data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <!-- Input fields for user information -->
               <form @submit.prevent="submitUser">
                 <div class="form-group">
                   <label for="username">Username</label>
@@ -122,49 +117,52 @@
     </div>
 
     <div v-if="isCEO || isUser || isAdmin" class="top" style="background-color: #11235A;">
-      <!-- Specific Features for CEO -->
+      <!-- Specific Features for CEO and some of them for all kama Request na Deposit -->
       <div class="request-btns">
-        <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal" title="Request money from the Organization">Request Money</button>
-        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal" title="Approve and reject all requests">Approvals</button>
-        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal" title="view all deposits to organization account">Deposits</button>
-        <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries" title="Distribute Salaries to all employees">Distribute Salaries</button>
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-primary" data-bs-toggle="modal"
+          data-bs-target="#requestModal" title="Request money from the Organization">Request Money</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#approvalModal"
+          title="Approve and reject all requests">Approvals</button>
+        <button v-if="isCEO" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal"
+          title="view all deposits to organization account">Deposits</button>
+        <button v-if="isCEO" class="btn btn-danger" @click="distributeSalaries"
+          title="Distribute Salaries to all employees">Distribute Salaries</button>
 
 
 
         <!-- view Deposits Modal -->
         <div class="modal fade" id="depositModal" role="dialog">
           <div class="modal-dialog modal-lg">
-            <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">Total Deposits: <strong>{{TotalIncome}} Ethers</strong></h4>
+                <h4 class="modal-title">Total Deposits: <strong>{{ TotalIncome }} Ethers</strong></h4>
                 <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
                   data-dismiss="modal"></button>
               </div>
               <div class="modal-body">
                 <div class="user-requests">
                   <h1 class="title">Deposits</h1>
-                 <table class="table table-bordered table-hover table-dark table-lg">
-                  <thead>
-                   <tr>
-                   <th>Request ID</th>
-                   <th>username</th>
-                   <th>Address</th>
-                   <th>Amount (Ether)</th>
-                   <th>Details</th>
-                   </tr>
-                  </thead>
-                 <tbody>
-                  <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
-                  <td>{{ DepositTransaction.id }}</td>
-                  <td>{{ (DepositTransaction.username) }}</td>
-                  <td>{{ DepositTransaction.depositor }}</td>
-                  <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
-                  <td>{{ DepositTransaction.details }}</td>
-                 </tr>
-                 </tbody>
-                 </table>
-              </div>
+                  <table class="table table-bordered table-hover table-dark table-lg">
+                    <thead>
+                      <tr>
+                        <th>Request ID</th>
+                        <th>username</th>
+                        <th>Address</th>
+                        <th>Amount (Ether)</th>
+                        <th>Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
+                        <td>{{ DepositTransaction.id }}</td>
+                        <td>{{ (DepositTransaction.username) }}</td>
+                        <td>{{ DepositTransaction.depositor }}</td>
+                        <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
+                        <td>{{ DepositTransaction.details }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -174,7 +172,6 @@
         <!-- Approval Modal -->
         <div class="modal fade" id="approvalModal" role="dialog">
           <div class="modal-dialog modal-lg">
-            <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Requests List</h4>
@@ -182,22 +179,22 @@
                   data-dismiss="modal"></button>
               </div>
               <div class="modal-body">
-                  <div v-for="request in requestsList" :key="request.id">
-                    <p><strong>Id:  </strong> {{ request.id }}</p>
-                    <p><strong>Username:  </strong> {{ request.username }}</p>
-                    <p><strong>Address:  </strong> {{ request.user }}</p>
-                    <p><strong>Details:  </strong> {{ request.details }}</p>
-                    <p><strong>Amount:  </strong>{{ request.amountWei }} Ether</p>
-                    <p ><strong>Status:  </strong ><span v-html="getStatusLabelWithColor(request.status)"></span></p>
+                <div v-for="request in requestsList" :key="request.id">
+                  <p><strong>Id: </strong> {{ request.id }}</p>
+                  <p><strong>Username: </strong> {{ request.username }}</p>
+                  <p><strong>Address: </strong> {{ request.user }}</p>
+                  <p><strong>Details: </strong> {{ request.details }}</p>
+                  <p><strong>Amount: </strong>{{ request.amountWei }} Ether</p>
+                  <p><strong>Status: </strong><span v-html="getStatusLabelWithColor(request.status)"></span></p>
 
-                    <!-- Display approve and reject buttons for pending requests -->
-                    <template v-if="request.status == 0">
-                      <button class="btn btn-success" @click="approveRequest(request.id)">Approve</button>
-                      <button class="btn btn-danger" @click="rejectRequest(request.id)">Reject</button>
-                    </template>
+                  <!-- Display approve and reject buttons for pending requests -->
+                  <template v-if="request.status == 0">
+                    <button class="btn btn-success" @click="approveRequest(request.id)">Approve</button>
+                    <button class="btn btn-danger" @click="rejectRequest(request.id)">Reject</button>
+                  </template>
 
-                    <hr>
-                  </div>
+                  <hr>
+                </div>
               </div>
             </div>
           </div>
@@ -207,7 +204,6 @@
         <!--Request Modal -->
         <div class="modal fade" id="requestModal" role="dialog">
           <div class="modal-dialog">
-            <!-- Modal content -->
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Fill Request Information</h4>
@@ -215,12 +211,11 @@
                   data-dismiss="modal"></button>
               </div>
               <div class="modal-body">
-                <!-- Input fields for REQUEST INFORMATION -->
                 <form @submit.prevent="submitRequest">
                   <div class="form-group">
                     <label for="requestAmount">Amount</label>
-                    <input type="number" class="form-control" id="requestAmount" v-model="requestAmount" step="0.01" min="0"
-                      placeholder="Ether Amount in Ether" required>
+                    <input type="number" class="form-control" id="requestAmount" v-model="requestAmount" step="0.01"
+                      min="0" placeholder="Ether Amount in Ether" required>
                   </div>
                   <div class="form-group">
                     <label for="requestDetails">Details of Request</label>
@@ -240,29 +235,27 @@
       <!--Deposit Modal -->
       <div class="modal fade" id="IncomeModal" role="dialog">
         <div class="modal-dialog">
-          <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Fill Deposit Information</h4>
-                <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
-                  data-dismiss="modal"></button>
+              <button style="color: white;" id="closeIcon" type="button" class="btn btn-close" data-bs-dismiss="modal"
+                data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Input fields for Deposit INFORMATION -->
-                <form @submit.prevent="depositMoney">
-                  <div class="form-group">
-                    <label for="depositAmount">Amount</label>
-                    <input type="number" class="form-control" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
-                      placeholder="Ether Amount in Ether" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="depositDetails">Details of Deposit</label>
-                    <input type="text" class="form-control" id="depositDetails" v-model="depositDetails" required>
-                  </div>
-                  <div class="form-footer">
-                    <button type="submit" class="btn btn-success">Submit</button>
-                  </div>
-                </form>
+              <form @submit.prevent="depositMoney">
+                <div class="form-group">
+                  <label for="depositAmount">Amount</label>
+                  <input type="number" class="form-control" id="depositAmount" v-model="depositAmount" step="0.01" min="0"
+                    placeholder="Ether Amount in Ether" required>
+                </div>
+                <div class="form-group">
+                  <label for="depositDetails">Details of Deposit</label>
+                  <input type="text" class="form-control" id="depositDetails" v-model="depositDetails" required>
+                </div>
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -270,135 +263,137 @@
 
 
       <div v-if="isUser || isCEO || isAdmin" class="deposits">
-        <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#IncomeModal" title="donating/funding/contributing money to the Organization">Deposit Money</button>
+        <button v-if="isUser || isAdmin || isCEO" class="btn btn-success" data-bs-toggle="modal"
+          data-bs-target="#IncomeModal" title="donating/funding/contributing money to the Organization">Deposit
+          Money</button>
       </div>
     </div>
     <hr>
 
-<div class="userTables" v-if="isUser || isAdmin">
-  <div class="user-requests" style="width: 700px;">
-  <h1 class="title">Requests</h1>
-  <table class="table table-hover table-bordered table-dark table-lg">
-    <thead>
-      <tr>
-        <th>Request ID</th>
-        <th>Amount (Eth)</th>
-        <th>Descriptions</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="request in requestsList" :key="request.id">
-        <td>{{ request.id }}</td>
-        <td>{{ request.amountWei  }}</td>
-        <td>{{ request.details }}</td>
-        <td v-html="getStatusLabelWithColor(request.status)"></td>
-      </tr>
-      <tr style="height: 50px;">
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+    <div class="userTables" v-if="isUser || isAdmin">
+      <div class="user-requests" style="width: 700px;">
+        <h1 class="title">Requests</h1>
+        <table class="table table-hover table-bordered table-dark table-lg">
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Amount (Eth)</th>
+              <th>Descriptions</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="request in requestsList" :key="request.id">
+              <td>{{ request.id }}</td>
+              <td>{{ request.amountWei }}</td>
+              <td>{{ request.details }}</td>
+              <td v-html="getStatusLabelWithColor(request.status)"></td>
+            </tr>
+            <tr style="height: 50px;">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-<div class="user-deposits" style="width: 700px;">
-  <h1 class="title">Deposits</h1>
-  <table class="table table-bordered table-hover table-dark table-lg" >
-    <thead>
-      <tr>
-        <th>Request ID</th>
-        <th>Amount (Ether)</th>
-        <th>Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
-        <td>{{ DepositTransaction.id }}</td>
-        <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
-        <td>{{ DepositTransaction.details }}</td>
-      </tr>
-      <tr style="height: 50px;">
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</div>
+      <div class="user-deposits" style="width: 700px;">
+        <h1 class="title">Deposits</h1>
+        <table class="table table-bordered table-hover table-dark table-lg">
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Amount (Ether)</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="DepositTransaction in depositList" :key="DepositTransaction.id">
+              <td>{{ DepositTransaction.id }}</td>
+              <td>{{ Number(DepositTransaction.amount.toString()) / 1e18 }}</td>
+              <td>{{ DepositTransaction.details }}</td>
+            </tr>
+            <tr style="height: 50px;">
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <div v-if="isCEO">
-    <div class="intro">
-      <div class="intro-card" title="Organization Account Balance">
-        <p>{{ mainAccountBalance }} Ether</p>
-        <h5>Main account Balance</h5>
+      <div class="intro">
+        <div class="intro-card" title="Organization Account Balance">
+          <p>{{ mainAccountBalance }} Ether</p>
+          <h5>Main account Balance</h5>
+        </div>
+        <div class="intro-card" title="All registered users in STC">
+          <p>{{ NumberOfUser }}</p>
+          <h5>Total Registered Users</h5>
+        </div>
+        <div class="intro-card" title="All transaction done in the STC blockchain Network">
+          <p>{{ TotalTransactions }}</p>
+          <h5>Total Transactions</h5>
+        </div>
       </div>
-      <div class="intro-card" title="All registered users in STC">
-        <p>{{ NumberOfUser }}</p>
-        <h5>Total Registered Users</h5>
+      <hr>
+      <h1 class="title">Income & Salaries</h1>
+      <div class="salaries">
+        <div class="salaries-card" title="Total amount of salaries distributes to the employees">
+          <p>{{ TotalSalariesAmount }} Ether</p>
+          <h5>Total Amount of Salaries Distributed</h5>
+        </div>
+        <div class="salaries-card" title="Total transactions of salaries ditributed">
+          <p>{{ TotalSalaryTransactions }} </p>
+          <h5>Total Salaries Transactions</h5>
+        </div>
+        <div class="salaries-card" title="This can be donation, funds and contributions">
+          <p>{{ TotalIncome }} Ether</p>
+          <h5>Total Amount of Income</h5>
+        </div>
+        <div class="salaries-card" title="All deposits transactions">
+          <p>{{ TotalIncomeTransactions }}</p>
+          <h5>Total Income Transactions</h5>
+        </div>
       </div>
-      <div class="intro-card" title="All transaction done in the STC blockchain Network">
-        <p>{{ TotalTransactions }}</p>
-        <h5>Total Transactions</h5>
+      <hr>
+      <h1 class="title">Requests</h1>
+      <div class="requests">
+        <div class="request-card" title="Total amount of money approved">
+          <p>{{ TotalAmountRequests }} Ether</p>
+          <h5>Total Amount Approved</h5>
+        </div>
+        <div class="request-card" title="Total transactions of requests">
+          <p>{{ TotalRequests }}</p>
+          <h5>Total Requests Transactions</h5>
+        </div>
+        <div class="request-card" title="Total number of approved transactions">
+          <p>{{ ApprovedRequests }}</p>
+          <h5>Approved Requests</h5>
+        </div>
+        <div class="request-card" title="Total number of Rejected transactions">
+          <p>{{ RejectedRequests }}</p>
+          <h5>Rejected Requests</h5>
+        </div>
+        <div class="request-card" title="Total number of Pending transactions">
+          <p>{{ PendingRequests }}</p>
+          <h5>Pending Requests</h5>
+        </div>
       </div>
     </div>
-    <hr>
-    <h1 class="title">Income & Salaries</h1>
-    <div class="salaries">
-      <div class="salaries-card" title="Total amount of salaries distributes to the employees">
-        <p>{{ TotalSalariesAmount }} Ether</p>
-        <h5>Total Amount of Salaries Distributed</h5>
-      </div>
-      <div class="salaries-card" title="Total transactions of salaries ditributed">
-        <p>{{ TotalSalaryTransactions }} </p>
-        <h5>Total Salaries Transactions</h5>
-      </div>
-      <div class="salaries-card" title="This can be donation, funds and contributions">
-        <p>{{ TotalIncome }} Ether</p>
-        <h5>Total Amount of Income</h5>
-      </div>
-      <div class="salaries-card" title="All deposits transactions">
-        <p>{{ TotalIncomeTransactions }}</p>
-        <h5>Total Income Transactions</h5>
-      </div>
-    </div>
-    <hr>
-    <h1 class="title">Requests</h1>
-    <div class="requests">
-      <div class="request-card" title="Total amount of money approved">
-        <p>{{ TotalAmountRequests }} Ether</p>
-        <h5>Total Amount Approved</h5>
-      </div>
-      <div class="request-card" title="Total transactions of requests">
-        <p>{{ TotalRequests }}</p>
-        <h5>Total Requests Transactions</h5>
-      </div>
-      <div class="request-card" title="Total number of approved transactions">
-        <p>{{ ApprovedRequests }}</p>
-        <h5>Approved Requests</h5>
-      </div>
-      <div class="request-card" title="Total number of Rejected transactions">
-        <p>{{ RejectedRequests }}</p>
-        <h5>Rejected Requests</h5>
-      </div>
-      <div class="request-card" title="Total number of Pending transactions">
-        <p>{{ PendingRequests }}</p>
-        <h5>Pending Requests</h5>
-      </div>
-    </div>
-    </div>
-    <loading-overlay :isLoading="isLoading" />
 
+    <loading-overlay :isLoading="isLoading" />
   </div>
 </template>
 
 <script>
 import LoadingOverlay from './LoadingOverlay.vue';
 import Web3 from 'web3';
-import YourSmartContractABI from '../MainAccountABI.js'; // Adjust the path accordingly
+import YourSmartContractABI from '../MainAccountABI.js';
 const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
 
 export default {
@@ -408,7 +403,7 @@ export default {
   },
   data() {
     return {
-      isLoading: true, // Set to true initially to show the loading effect
+      isLoading: true,
       depositAmount: 0,
       depositDetails: '',
       mainAccountBalance: 0,
@@ -434,14 +429,12 @@ export default {
       deleteUserAddress: '',
       requestsList: [],
       depositList: [],
-      defaultRowCount: 5, // Number of default empty rows
       allUsers: [],
       registeredUserName: 'Guest',
     };
   },
   computed: {
     isCEO() {
-      // Implement logic to determine if the user is a CEO
       return this.$store.state.userRole === 'CEO';
     },
     isAdmin() {
@@ -449,7 +442,6 @@ export default {
       return this.$store.state.userRole === 'admin';
     },
     isUser() {
-      // Implement logic to determine if user is the regitered in system
       return this.$store.state.userRole === 'user';
     },
   },
@@ -458,218 +450,77 @@ export default {
   methods: {
 
     async checkMetaMaskConnection() {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        const isConnected = accounts.length > 0;
-        this.isMetaMaskConnected = isConnected;
-      } catch (error) {
-        console.error('Error checking MetaMask connection:', error);
-      }
-    }
-    },
-
-    async connectMetaMask() {
-    if (!this.$store.state.userRole) {
       if (window.ethereum) {
         try {
-          await window.ethereum.request({ method: 'eth_requestAccounts' });          
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          const userAddress = accounts[0];
+          const isConnected = accounts.length > 0;
+          this.isMetaMaskConnected = isConnected;
+        } catch (error) {
+          console.error('Error checking MetaMask connection:', error);
+        }
+      }
+    },
+
+
+    async connectMetaMask() {
+      if (!this.$store.state.userRole) {
+        if (window.ethereum) {
+          try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            const userAddress = accounts[0];
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+            const isRegistered = await contract.methods.isAddressRegistered(userAddress).call();
+
+            if (isRegistered) {
+
+              const userRole = await contract.methods.getUserRole(userAddress).call();
+
+              // Store user role in Vuex
+              this.$store.commit('setUserRole', userRole);
+
+            } else {
+              window.alert('You are not Registered User')
+            }
+          } catch (error) {
+            console.error('Error connecting to MetaMask or checking address registration:', error);
+          }
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      }
+    },
+
+
+    async fetchAllUsers() {
+      try {
+        if (window.ethereum) {
           const web3 = new Web3(window.ethereum);
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-          // Check if the address is registered in the smart contract
-          const isRegistered = await contract.methods.isAddressRegistered(userAddress).call();
-          
-          if (isRegistered) {
-          console.log('Address is registered in the smart contract');
+          const allUsers = await contract.methods.viewAllUsers().call();
 
-          // Fetch user role from the smart contract
-          const userRole = await contract.methods.getUserRole(userAddress).call();
-          
-          // Store user role in Vuex
-          this.$store.commit('setUserRole', userRole);
+          // Convert salary from string to number and address to string
+          const formattedUsers = allUsers.map(user => {
+            return {
+              username: user.username,
+              address: user.userAddress,
+              salary: Number(user.salary),
+              role: user.role
+            };
+          });
 
-          // Navigate to the Dashboard component
-          // this.$router.push('/dashboard');
-
-            // Now you can perform further actions or navigate to the dashboard
-          } else {
-            window.alert('You are not Registered User')
-            console.log('Address is not registered in the smart contract');
-            // Handle the case where the address is not registered
-          }
-        } catch (error) {
-          console.error('Error connecting to MetaMask or checking address registration:', error);
-        }
-      } else {
-        window.alert('MetaMask extension not detected');
-        console.error('MetaMask extension not detected');
-      }
-    }
-    },
-
-    async fetchAllUsers() {
-    try {
-        if (window.ethereum) {
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-            // Call the smart contract method to get all registered users
-            const allUsers = await contract.methods.viewAllUsers().call();
-
-            // Convert salary from string to number and address to string
-            const formattedUsers = allUsers.map(user => {
-                return {
-                    username: user.username,
-                    address: user.userAddress,
-                    salary: Number(user.salary),
-                    role: user.role
-                };
-            });
-
-            this.allUsers = formattedUsers;
+          this.allUsers = formattedUsers;
         } else {
-            console.error('MetaMask extension not detected');
-        }
-    } catch (error) {
-        console.error('Error fetching all registered users:', error);
-    }
-},
-
-
-
-   async deleteUser() {
-    try {
-      if (window.ethereum) {
-
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-        
-        // Make a transaction to delete the user
-        await contract.methods.deleteUser(this.deleteUserAddress).send({ from: userAddress });
-        this.fetchAllUsers();
-
-      } else {
-        window.alert('MetaMask extension not detected');
-        console.error('MetaMask extension not detected');
-      }
-
-    } catch (error){
-        console.error('Error deleting user:', error);
-
-    } finally {
-      this.deleteUserAddress = '';
-    }
-   },
-
-    async submitRequest() {
-      try {
-        if (window.ethereum){
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-
-        // Make a transaction to request money
-        await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
-        this.fetchRequests();
-
-        console.log('Money request submitted successfully!');
-
-        } else {
-          window.alert('MetaMask extension not detected');
           console.error('MetaMask extension not detected');
         }
       } catch (error) {
-        console.error('Error Requesting Money:', error);
-      } finally {
-        // Reset the form or perform other actions after submission
-        this.requestAmount = 0;
-        this.requestDetails = '';
+        console.error('Error fetching all registered users:', error);
       }
     },
 
-    getStatusLabelWithColor(status) {
-      const color = this.getColorByStatus(status);
-      return `<span style="color: ${color}">${this.getStatusLabel(status)}</span>`;
-    },
-    getColorByStatus(status) {
-      switch (parseInt(status)) {
-        case 0:
-          return 'orange'; // Set the color for 'Pending'
-        case 1:
-          return 'green'; // Set the color for 'Approved'
-        case 2:
-          return 'red'; // Set the color for 'Rejected'
-        default:
-          return 'black'; // Set a default color for 'Unknown'
-      }
-    },
-
-    getStatusLabel(status) {
-      switch (parseInt(status)) {
-        case 0:
-          return 'Pending';
-        case 1:
-          return 'Approved';
-        case 2:
-          return 'Rejected';
-        default:
-          return 'Unknown';
-      }
-    },
-
-
-    async approveRequest(requestId) {
-        try {
-          if (window.ethereum){
-            console.log('Approving request with ID:', requestId);
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const userAddress = accounts[0];
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-            
-            // Call the smart contract method to approve the request
-            await contract.methods.processRequest(requestId, true).send({ from: userAddress });
-
-            // Fetch the updated list of requests
-            this.fetchMainAccountBalance();
-            this.fetchRequests();
-          } else{
-          window.alert('MetaMask extension not detected');
-          console.error('MetaMask extension not detected');
-          }
-        } catch (error) {
-            console.error('Error approving request:', error);
-        }
-    },
-
-    async rejectRequest(requestId) {
-        try {
-          if (window.ethereum){
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const userAddress = accounts[0];
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-            
-            // Call the smart contract method to reject the request
-            await contract.methods.processRequest(requestId, false).send({ from: userAddress });
-
-            // Fetch the updated list of requests
-            this.fetchMainAccountBalance();
-            this.fetchRequests();
-          } else{
-          window.alert('MetaMask extension not detected');
-          console.error('MetaMask extension not detected');
-          }
-        } catch (error) {
-            console.error('Error rejecting request:', error);
-        }
-    },
 
     async submitUser() {
       try {
@@ -689,24 +540,145 @@ export default {
               this.newUser.role
             )
             .send({ from: userAddress });
-          
-            this.fetchAllUsers();
 
-          console.log('User registration successful!');
+          this.fetchAllUsers();
+
         } else {
           window.alert('MetaMask extension not detected');
-          console.error('MetaMask extension not detected');
         }
       } catch (error) {
         console.error('Error registering user:', error);
       } finally {
-        // Reset the form or close the modal after submission
         this.newUser = {
           username: '',
           address: '',
           salary: 0,
           role: '',
         };
+      }
+    },
+
+
+    async deleteUser() {
+      try {
+        if (window.ethereum) {
+
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          await contract.methods.deleteUser(this.deleteUserAddress).send({ from: userAddress });
+          this.fetchAllUsers();
+
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+
+      } catch (error) {
+        console.error('Error deleting user:', error);
+
+      } finally {
+        this.deleteUserAddress = '';
+      }
+    },
+
+
+    async submitRequest() {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          await contract.methods.requestMoney(this.requestAmount, this.requestDetails).send({ from: userAddress });
+          this.fetchRequests();
+
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error Requesting Money:', error);
+      } finally {
+        this.requestAmount = 0;
+        this.requestDetails = '';
+      }
+    },
+
+    getStatusLabelWithColor(status) {
+      const color = this.getColorByStatus(status);
+      return `<span style="color: ${color}">${this.getStatusLabel(status)}</span>`;
+    },
+
+    getColorByStatus(status) {
+      switch (parseInt(status)) {
+        case 0:
+          return 'orange';
+        case 1:
+          return 'green';
+        case 2:
+          return 'red';
+        default:
+          return 'black';
+      }
+    },
+
+    getStatusLabel(status) {
+      switch (parseInt(status)) {
+        case 0:
+          return 'Pending';
+        case 1:
+          return 'Approved';
+        case 2:
+          return 'Rejected';
+        default:
+          return 'Unknown';
+      }
+    },
+
+
+    async approveRequest(requestId) {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          await contract.methods.processRequest(requestId, true).send({ from: userAddress });
+
+          // Fetch the updated list of requests
+          this.fetchMainAccountBalance();
+          this.fetchRequests();
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error approving request:', error);
+      }
+    },
+
+
+    async rejectRequest(requestId) {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+
+          // Call the smart contract method to reject the request
+          await contract.methods.processRequest(requestId, false).send({ from: userAddress });
+
+          // Fetch the updated list of requests
+          this.fetchMainAccountBalance();
+          this.fetchRequests();
+        } else {
+          window.alert('MetaMask extension not detected');
+        }
+      } catch (error) {
+        console.error('Error rejecting request:', error);
       }
     },
 
@@ -778,30 +750,30 @@ export default {
 
 
     async depositMoney() {
-    try {
+      try {
         if (window.ethereum) {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const userAddress = accounts[0];
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-            console.log(this.depositDetails, this.depositAmount );
-            // Include details when calling the deposit function
-            await contract.methods.addFunds(this.depositDetails).send({
-                from: userAddress,
-                value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
-            });
-            this.fetchDeposits();
+          // Include details when calling the deposit function
+          await contract.methods.addFunds(this.depositDetails).send({
+            from: userAddress,
+            value: web3.utils.toWei(this.depositAmount.toString(), 'ether')
+          });
+          this.fetchDeposits();
 
-            console.log('Deposit successful!');
         } else {
-            window.alert('MetaMask extension not detected');
-            console.error('MetaMask extension not detected');
+          window.alert('MetaMask extension not detected');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error depositing money:', error);
-    }
-},
+      } finally {
+        this.depositAmount = 0;
+        this.depositDetails = '';
+      }
+    },
 
 
 
@@ -812,9 +784,7 @@ export default {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-        // Call the distributeSalary function from the smart contract
         await contract.methods.distributeSalary().send({ from: userAddress, });
-        console.log('Salaries distributed successfully!');
 
         // Fetch the updated list of requests
         this.fetchMainAccountBalance();
@@ -824,84 +794,73 @@ export default {
       }
     },
 
-        async fetchRequests() {
-        try {
-          if (window.ethereum){
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const userAddress = accounts[0];
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
+    async fetchRequests() {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-            const totalRequests = await contract.methods.requestCounter().call();
-            const CEO_Address = await contract.methods.CEO().call();
-            console.log(totalRequests)
+          const totalRequests = await contract.methods.requestCounter().call();
+          const CEO_Address = await contract.methods.CEO().call();
 
-            // Fetch each request individually
-            const requests = [];
-            for (let i = 1; i <= totalRequests; i++) {
-                const request = await contract.methods.requests(i).call();
-                request.username = await contract.methods.getUserName(request.user).call();
-                // Check if the request belongs to the current user
-                if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
-                    requests.push(request);
-                }
-                else if (request.user.toLowerCase() === userAddress.toLowerCase()) {
-                  requests.push(request);
-                }
+          // Fetch each request individually
+          const requests = [];
+          for (let i = 1; i <= totalRequests; i++) {
+            const request = await contract.methods.requests(i).call();
+            request.username = await contract.methods.getUserName(request.user).call();
+            // Check if the request belongs to the current user
+            if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
+              requests.push(request);
             }
-
-            // Update the data property with the list of requests
-            this.requestsList = requests.reverse(); // Reverse the array to display the latest requests first
-            
-            console.log('Requests List:', this.requestsList); // Log the entire list to the console
-          } else {
-          window.alert('MetaMask extension not detected');
-          console.error('MetaMask extension not detected');
+            else if (request.user.toLowerCase() === userAddress.toLowerCase()) {
+              requests.push(request);
+            }
           }
-        } catch (error) {
-            console.error('Error fetching requests:', error);
+          this.requestsList = requests.reverse(); 
+
+        } else {
+          window.alert('MetaMask extension not detected');
         }
+      } catch (error) {
+        console.error('Error fetching requests:', error);
+      }
     },
 
 
     async fetchDeposits() {
-    try {
+      try {
         if (window.ethereum) {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const userAddress = accounts[0];
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
-            
-            const CEO_Address = await contract.methods.CEO().call();
-            const totalDeposits = await contract.methods.totalIncomeTransactions().call();
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userAddress = accounts[0];
+          const web3 = new Web3(window.ethereum);
+          const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-            // Fetch all deposit transactions
-            const deposits = [];
-            for (let i = 0; i < totalDeposits; i++) {
-                const deposit = await contract.methods.depositTransactions(i).call();
-                deposit.username = await contract.methods.getUserName(deposit.depositor).call();
-                console.log('deposits' ,deposit)
-                if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
-                deposits.push(deposit);
-                }
-                else if (deposit.depositor.toLowerCase() === userAddress.toLowerCase()) {
-                  deposits.push(deposit);
-                }
+          const CEO_Address = await contract.methods.CEO().call();
+          const totalDeposits = await contract.methods.totalIncomeTransactions().call();
 
+          const deposits = [];
+          for (let i = 0; i < totalDeposits; i++) {
+            const deposit = await contract.methods.depositTransactions(i).call();
+            deposit.username = await contract.methods.getUserName(deposit.depositor).call();
+            if (userAddress.toLowerCase() === CEO_Address.toLowerCase()) {
+              deposits.push(deposit);
+            }
+            else if (deposit.depositor.toLowerCase() === userAddress.toLowerCase()) {
+              deposits.push(deposit);
             }
 
-            // Update the data property with the list of deposit transactions
-            this.depositList = deposits.reverse(); // Reverse the array to display the latest transactions first
-
-            console.log('Deposits List:', this.depositList); // Log the entire list to the console
+          }
+          this.depositList = deposits.reverse(); 
+          
         } else {
-            window.alert('MetaMask extension not detected');
-            console.error('MetaMask extension not detected');
+          window.alert('MetaMask extension not detected');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching deposits:', error);
-    }
-},
+      }
+    },
 
 
   },
@@ -913,7 +872,7 @@ export default {
     this.fetchMainAccountBalance();  // Fetch main account balance when the component is mounted
     this.fetchRequests();  // Fetch requests when the component is mounted
     this.fetchDeposits(); // Fetch deposits when the component is mounted
-    this.fetchMainAccountBalance(); 
+    this.fetchMainAccountBalance();
     this.connectMetaMask();
 
     if (window.ethereum) {
@@ -921,16 +880,15 @@ export default {
         window.location.reload();
       });
     }
-    // Check for the user's role when the component is mounted
     if (!this.$store.state.userRole) {
       // If the role is not present, trigger the MetaMask connection process
       this.connectMetaMask();
     }
 
-    // Simulate data loading delay (replace with your actual data loading logic)
+    // Simulate data loading delay
     setTimeout(() => {
       this.isLoading = false;
-    }, 2000); // Adjust the timeout duration as needed
+    }, 1500); //timeout duration
 
   },
 };
@@ -1091,29 +1049,34 @@ export default {
 .form-group {
   margin-bottom: 10px;
 }
-#connect{
+
+#connect {
   display: flex;
   justify-content: center;
   padding-top: 15px;
 }
-.userTables{
+
+.userTables {
   margin-top: 50px;
   display: flex;
   justify-content: space-around;
 }
-.user-requests .user-deposits{
+
+.user-requests .user-deposits {
   table-layout: fixed;
 }
-.admin-users{
+
+.admin-users {
   padding: 0px 20px 20px;
   display: flex;
   justify-content: start;
 }
-.adminUsers{
+
+.adminUsers {
   margin-top: 50px;
 }
-.table-lg {
-  font-size: auto; /* Adjust the font size as needed */
-}
 
+.table-lg {
+  font-size: auto;
+}
 </style>

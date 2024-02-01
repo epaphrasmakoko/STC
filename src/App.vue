@@ -15,7 +15,7 @@
 // import DashboardView from './components/Dashboard.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import Web3 from 'web3';
-import YourSmartContractABI from './MainAccountABI.js'; // Adjust the path accordingly
+import YourSmartContractABI from './MainAccountABI.js';
 const contractAddress = '0xEC8548075D7543722bc451DDf1dbd498EDed7D56'; // contract address
 
 export default {
@@ -23,18 +23,17 @@ export default {
   components: {
     LoadingOverlay,
   },
-    data() {
+  data() {
     return {
-      isLoading: true, // Set to true initially to show the loading effect
+      isLoading: true, 
       registeredUserName: 'Guest',
     };
   },
   mounted() {
-    // Assuming you have a method in your Smart Contract to get the registered user's name
     this.fetchRegisteredUserName();
     setTimeout(() => {
       this.isLoading = false;
-    }, 2000); // Adjust the timeout duration as needed
+    }, 1500); 
   },
   methods: {
     async fetchRegisteredUserName() {
@@ -45,10 +44,9 @@ export default {
           const web3 = new Web3(window.ethereum);
           const contract = new web3.eth.Contract(YourSmartContractABI, contractAddress);
 
-          // Assuming you have a method in your Smart Contract to get the user's name
           const userName = await contract.methods.getUserName(userAddress).call();
           this.registeredUserName = userName;
-          if (this.registeredUserName == ''){
+          if (this.registeredUserName == '') {
             this.registeredUserName = 'Guest';
           }
         } else {
@@ -78,7 +76,8 @@ export default {
   align-items: center;
 }
 
-.appbar h2,h1 {
+.appbar h2,
+h1 {
   font-size: 24px;
   color: white;
   font-family: sans-serif;

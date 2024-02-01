@@ -1,28 +1,29 @@
 <template>
-    <div v-if="isLoading" class="loading-overlay">
-      <div id="circle">
+  <div v-if="isLoading" class="loading-overlay">
+    <div id="circle">
+      <div class="loader">
         <div class="loader">
           <div class="loader">
-            <div class="loader">
-              <div class="loader"></div>
-            </div>
+            <div class="loader"></div>
           </div>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
-  <script>
-  export default {
-    props: {
-      isLoading: Boolean,
-    },
-  };
-  </script>
+<script>
+export default {
+  props: {
+    isLoading: Boolean,
+  },
+};
+</script>
   
-  <style scoped>
-  /* Loading overlay styles */
-  html, body {
+<style scoped>
+/* Loading overlay styles */
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -64,10 +65,10 @@ body {
   width: 100%;
   height: 100%;
   background: rgba(0, 59, 99, 0.8);
-  display: flex; 
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
 }
-  </style>
+</style>
   
